@@ -95,10 +95,11 @@ using the following command from the terminal:
 node WebMF-server.js
 ```
 
-#### Step 3. Add WebMF to your web application
+#### Step 3. Add WebMF and socket.io to your web application
 It is very easy to start using this framework. Just import the file WebMF-client.js to your directory
-you will use for the web. Add the following line in your HTML-file:
+you will use for the web. Do the same with socket.io.min.js Add the following lines in your HTML-file:
 
 ```HTML
+<script src="socket.io.min.js" type="text/javascript"></script>
 <script src="WebMF-client.js" type="text/javascript"></script>
 ```
