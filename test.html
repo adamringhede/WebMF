@@ -11,8 +11,8 @@
 
 
 <script>
-function init(name, min){
-	var session = new MPSession(name, "Adams-MacBook-Pro.local", "8083", "game"),
+function init(name, min, game){
+	var session = new MPSession(name, "Adams-MacBook-Pro.local", "8083", game),
 		match;
 	
 	session.onConnect(function(){

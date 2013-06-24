@@ -1,5 +1,7 @@
 var io = require('socket.io').listen(8083);
 
+
+
 function Player(playerName, sock){
 	this.name = playerName || "";
 	this.inmatch = false;
@@ -289,9 +291,12 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.putPlayersInMatches();
 }
 
-var matchMaster = new MatchMaster();
 
-var game = io.of('/game').on('connection', function (socket) {
+
+//var game = io.of('/game').on('connection', function (socket) {
+function gameConnectionHandler(socket, matchMaster){
+//	var matchMaster = new MatchMaster(); // MATCHMASTER IS IN A LOCAL SCOPE HERE: ITS A NONO.
+	// SHOULD BE ONE MATCHMASTER PER GAME
 	socket.on('set nickname', function (playerName) {
 		socket.set('nickname', new Player(playerName, socket), function () {
 			socket.emit('name set', socket.id);
@@ -392,6 +397,10 @@ var game = io.of('/game').on('connection', function (socket) {
 				}
 				match.removePlayer(socket.id);
 				socket.set('currentMatchNumber', -1);
+				if(match.players.length === 0) {
+					// Remove match
+					matchMaster.removeMatch(num);
+				}
 			});
 		});
 	});
@@ -459,4 +468,19 @@ var game = io.of('/game').on('connection', function (socket) {
 	socket.on('leaveMatch', function(playerId){
 		matchMaster.removePlayerFromQueue(playerId);
 	});
-});
+}
+
+
+(function(){
+	var games = ['game','game2'],
+		running = {};
+	for(var i = 0; i < games.length; i++){
+		running[games[i]] = (function(){
+			console.log(games[i]);
+			var matchMaster = new MatchMaster();
+			return io.of('/'+games[i]).on('connection', function(socket){
+				gameConnectionHandler(socket, matchMaster);
+			});
+		})();
+	}
+})();
