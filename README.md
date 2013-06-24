@@ -73,3 +73,32 @@ If you want to help out with documentation, tutorials, testing, implementation, 
 	– Node.js
 	– socket.io
 
+## Get started
+
+### Setup
+
+#### Step 1. Install node and socket.io
+If you have used or already installed node and socket.io this step can be skipped.
+
+Download node from nodejs.org and install it on whatever operating system you are using.
+
+You can install socket.io with the following command from the terminal:
+``` Shell
+npm install socket.io-client
+```
+
+#### Step 2. Setup the backend
+Add the file WebMF-server.js somewhere on your server.
+Move to the directory you put the file in and start the server by 
+using the following command from the terminal:
+``` Shell
+node WebMF-server.js
+```
+
+#### Step 3. Add WebMF to your web application
+It is very easy to start using this framework. Just import the file WebMF-client.js to your directory
+you will use for the web. Add the following line in your HTML-file:
+
+```HTML
+<script src="WebMF-client.js" type="text/javascript"></script>
+```
