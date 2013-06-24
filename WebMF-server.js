@@ -34,6 +34,7 @@ function Match(specs){
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
+	this.reselectHost();
 //	this._onStateChange = function(){};
 }
 /* Change the state of the match. 
@@ -110,7 +111,7 @@ Match.prototype.getState = function(path){
 Match.prototype.addPlayer = function(player){
 	this.players.push(player);
 	player.inmatch = true;
-	if(this.players.length === 0){
+	if(this.players.length === 1){
 		this.host = player;
 	}
 	this.change();
@@ -138,16 +139,20 @@ Match.prototype.removePlayer = function(playerId){
 	return false; 
 };
 Match.prototype.reselectHost = function(playerId){
+	if(this.players.length === 1) {
+		this.host = this.players[0];
+		return;
+	}
 	for(var i = 0; i < this.players.length; i++){
 		// If none is specified; first possible player will be selected. 
-		if(!player) {
+		if(!playerId) {
 			// If this is a player object and it is not the current host. 
 			if(this.players[i] instanceof Player && this.players[i].socket.id !== this.host.socket.id){
 				this.host = this.players[i];
 				return true;
 			}
 		} else {
-			if(this.players[i].socket.id = playerId){
+			if(this.players[i].socket.id === playerId){
 				this.host = this.players[i];
 				return true;
 			}
@@ -208,7 +213,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 				players.push(match.players[i].info());
 			}
 			match.addPlayer(player);
-			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host});
+			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info()});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);

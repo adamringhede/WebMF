@@ -140,7 +140,7 @@ MPMatch.prototype.bind = function(type, callback){
  * will not recieve a notification, even if the player has bound to it. 
  */
 MPMatch.prototype.trigger = function(type, data, unreliable){
-	((unreliabe || false) ? this.socket.volatile : this.socket).emit(type, data);
+	((unreliable || false) ? this.socket.volatile : this.socket).emit(type, data);
 };
 /* Update the centralized state using a path and an object.
  */ 
