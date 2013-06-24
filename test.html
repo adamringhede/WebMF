@@ -37,8 +37,6 @@ function init(name, min){
 				match.bind("move", function(data){
 				//	console.log(data);
 				});
-				console.log(match.currentPlayer);
-				console.log(match.whosTurn());
 				match.updateState("position/adam/coords",{x:2,y:5});
 				// Some methods have to wait for others to have have finished first
 				// for the expected effect. Having callback everywhere is not fun. 

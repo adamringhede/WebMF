@@ -6,6 +6,7 @@ function MPMatch(socket, matchnumber, players){
 	this.players = new MPPlayerCollection();
 	this.players.fill(players);
 	this.state = {};
+	this.localPlayerId = "";
 	this.host = null;
 	this._onPlayerJoined = function(){};
 	this._onPlayerDisconnect = function(){};
@@ -244,6 +245,11 @@ MPSession.prototype.onConnect = function(f){
 MPSession.prototype.onDisconnect = function(f){
 	this._onDisconnect = f;
 };
+/* Leave the matchmaking queue
+ */
+MPSession.prototype.leaveQueue = function(f){
+	this.socket.emit('leaveQueue');
+};
 /* Quit the session.
  */
 MPSession.prototype.disconnect = function(){
@@ -273,6 +279,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		} else {
 			nm = new MPMatch(self.socket, data.match, data.players);
 		}
+		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || data.host.id;
 		self._onMatchFound(nm);
