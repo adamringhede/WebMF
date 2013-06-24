@@ -248,7 +248,7 @@ MPSession.prototype.onDisconnect = function(f){
 /* Leave the matchmaking queue
  */
 MPSession.prototype.leaveQueue = function(f){
-	this.socket.emit('leaveQueue');
+	this.socket.emit('leaveQueue', this.localPlayerId);
 };
 /* Quit the session.
  */

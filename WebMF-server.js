@@ -224,6 +224,16 @@ MatchMaster.prototype.removeMatch = function(matchNumber){
 	//this.matches.splice(matchNumber,1); // This would change the everything
 	this.matches[matchNumber] = null;
 }
+MatchMaster.prototype.removePlayerFromQueue = function(playerId){
+	for(var i = 0; i < this.playerQueue.length; i++){
+		if(this.playerQueue[i].socket.id === playerId){
+			this.players.splice(i,1);
+			return true;
+		}
+	}
+	// Did not delete anybody
+	return false;
+}
 MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	var emptySlots = 0;
 	for(var i = 0; i < this.matches.length; i++){
@@ -440,5 +450,8 @@ var game = io.of('/game').on('connection', function (socket) {
 				}
 			}
 		});
+	});
+	socket.on('leaveMatch', function(playerId){
+		matchMaster
 	});
 });
