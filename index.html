@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<script src="socket.io.js"></script>
+<script src="frontend.js"></script>
+
+
+<script>
+function init(name, min){
+	var session = new MPSession(name, "Adams-MacBook-Pro.local", "8083"),
+		match;
+	
+	session.onConnect(function(){
+		session.startMatchmaking({
+			type: "TurnBased",
+			filters: {
+				min: min || 0,
+				max: 4
+			},
+			onQueue: function(){
+				console.log("Put in queue");
+			},
+			onMatchFound: function(newmatch){
+				console.log("Match found");
+				match = newmatch;
+				match.onPlayerJoined(function(p){
+					console.log(p);
+				});
+				match.onPlayerDisconnect(function(p){
+					console.log(p);
+				});
+				match.bind("move", function(data){
+				//	console.log(data);
+				});
+				console.log(match.currentPlayer);
+				console.log(match.whosTurn());
+				match.updateState("position/adam/coords",{x:2,y:5});
+				// Some methods have to wait for others to have have finished first
+				// for the expected effect. Having callback everywhere is not fun. 
+				setTimeout(function(){
+					// Issue: if the bind has not yet taken effect, the triggering will not work
+					match.trigger("move", "move was triggered");
+					match.getState("position", function(st){
+						console.log(st);
+					});
+				}, 6000);
+				match.onTurnChanged(function(player){
+					console.log("Changed turn to: " + player.name);
+				});
+				setInterval(function(){
+					match.changeTurn();
+				}, 10000);
+			}
+		});
+	});
+	session.onDisconnect(function(){
+		console.log("oh no I lost my connection");
+	});
+}
+</script>
+
+</body>
+</html>
+
+
+
+
