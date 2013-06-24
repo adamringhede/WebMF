@@ -1,4 +1,6 @@
-#  (MWTK) 
+#  WebMF
+
+A javascript framework using web sockets to simplify the process of making multiplayer games with web technologies that can work across different platforms.
 
 ## About
 
@@ -70,41 +72,4 @@ If you want to help out with documentation, tutorials, testing, implementation, 
 ### Dependencies
 	– Node.js
 	– socket.io
-	
-## How to use
 
-### MPSession(string name)
-
-Creates a new multiplayer session. 
-
-### MPSession.onConnect( Function callback )
-### MPSession.onPlayerJoined( Function callback )
-### MPSession.onPlayerDisconnect( Function callback )
-### MPMatch.recieve( Function callback(Object data) )
-### MPMatch.send( MPPlayer reciever, Object data)
-### MPSession.startMatchmaking( Object filters, Function onQueue(), Function onMatchFound() )
-
-	This method puts the player in a queue, waiting to be put in a match. 
-	Filters specify the minimum and maximum number of players in the match.
-
-	```js
-	var match;
-	session.startMatchmaking({
-		filters: {
-			min: 0,
-			max: 4
-		},
-		onQueue: function(){
-			console.log("Put in queue");
-		},
-		onMatchFound: function(newmatch){
-			console.log("Match found");
-			match = newmatch;
-		}
-	});
-	```
-
-### MPSession.disconnect();
-### MPSession.onDisconnect( Function callback )
-
-### MPPlayer
