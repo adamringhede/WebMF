@@ -36,7 +36,7 @@ To create a platform for developers making multiplayer games. It should have an 
 		- Send data to the host
 	– Send faster but unreliable messages
 	– Kick a player from the match.
-	– (Planned #?) Join a specified ongoing open match without the use of matchmaking
+	– (Planned #1) Join a specified ongoing open match without the use of matchmaking
 		- If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
 	– (Planned #2) Massive Multiplayer matches for huge games with different needs.
@@ -102,4 +102,59 @@ you will use for the web. Do the same with socket.io.min.js Add the following li
 ```HTML
 <script src="socket.io.min.js" type="text/javascript"></script>
 <script src="WebMF-client.js" type="text/javascript"></script>
+```
+
+### Code examples
+The followning code examples are on the client side. 
+
+#### Initializing a session
+The first thing that has to be done is to create a new session, which is done using the following code.
+Let's say we have our game on the server myGame.example.com, listening to port 8083 for new connection and the local
+player will use the nickname John Doe. 
+```JS
+var session = new MPSession("John Doe", "myGame.example.com", "8083"),
+```
+#### Using matchmake
+The following code first creates a callback for when a new connection is established, and starts matchmaking
+with some parameters. When matchmaking starts, the player will be put in a queue until a match is found.
+The parameters onQueue and onMatchFound are set to handle these events. Filters specify the minimum amount of 
+players there has to be in a match. If there is no match, a new one will created for the player with the specified
+filters, as long as the minimum number of players is 0. If the minimum is more than 0, the player will have to wait
+until there is a match with open spots with at least the amount of players the minimum states. The second filter is
+the maximum number of players there will be able to be in a match. 
+```JS
+session.onConnect(function(){
+	session.startMatchmaking({
+		filters: {
+			min: 0,
+			max: 4
+		},
+		onQueue: function(){
+			console.log("Looking for a match");
+		},
+		onMatchFound: function(match){
+			console.log("Found a match");
+		}
+	});
+});
+```
+#### Binding and triggering events on the match
+Once you have recieved a new match object (passed as a parameter to the onMatchFound-callback) you can start doing 
+alot of things with it. One thing is to bind and trigger events. To listen for for an event called playerMoved you
+can use the following code.
+```JS
+match.bind("playerMoved", function(data){
+	console.log("Player " + data.playerNickname + " moved to X:" + data.position.x + " Y:" + data.position.y);
+});
+```
+
+To trigger this event another client could use the following code.
+```JS
+match.trigger("playerMoved", {
+	playerNickname:"John Does",
+	position: {
+		x: 24,
+		y:5
+	}
+});
 ```
