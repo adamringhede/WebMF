@@ -452,6 +452,6 @@ var game = io.of('/game').on('connection', function (socket) {
 		});
 	});
 	socket.on('leaveMatch', function(playerId){
-		matchMaster
+		matchMaster.removePlayerFromQueue(playerId);
 	});
 });
