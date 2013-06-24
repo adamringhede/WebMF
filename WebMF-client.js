@@ -201,7 +201,7 @@ MPTurnBasedMatch.prototype.changeTurn = function(){
 	this.socket.emit('changeTurn');
 };
 
-function MPSession(name, hostname, port){
+function MPSession(name, hostname, port, gameName){
 	this.localPlayerId = "";
 	this.localPlayerName = name || "";
 	this.matchInProgress = false;
@@ -211,7 +211,9 @@ function MPSession(name, hostname, port){
 	this._onDisconnect = function(){};
 	this.timeStarted = (new Date()).getTime();
 	try{
-		this.socket = io.connect(hostname+':'+port+'/game');
+		this.socket = io.connect(hostname+':'+port+'/'+gameName, {
+			reconnect:false
+		});
 	} catch (e) {
 		return e;
 	}
