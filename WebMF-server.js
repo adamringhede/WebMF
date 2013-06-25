@@ -1,6 +1,5 @@
-var io = require('socket.io').listen(8083);
-
-
+var socketio = require('socket.io');
+var io = socketio.listen(8083);
 
 function Player(playerName, sock){
 	this.name = playerName || "";
@@ -470,17 +469,43 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 }
 
-
+	
 (function(){
-	var games = ['game','game2'],
-		running = {};
+	var http = require('http'),
+	    fs = require('fs'),
+		configurations = socketio.listen(8084),
+		games = require('./config').games,
+		running = {},
+		adminSocket;
+
+	fs.readFile('./WebMF-config.html', function (err, html) {
+	    if (err) {
+	        throw err; 
+	    }       
+	    http.createServer(function(request, response) {  
+	        response.writeHeader(200, {"Content-Type": "text/html"});  
+	        response.write(html);  
+	        response.end();  
+	    }).listen(8000);
+	});
+	
+	configurations.on('connection', function(socket){
+		adminSocket = socket;
+		socket.on('shutDown', function(gameName){
+		//	running[gameName]
+		});
+	});
+	setTimeout(function(){
+	// Start games in config file
 	for(var i = 0; i < games.length; i++){
-		running[games[i]] = (function(){
-			console.log(games[i]);
+		running[games[i].name] = (function(){
+			console.log("Started: "+games[i].name);
 			var matchMaster = new MatchMaster();
-			return io.of('/'+games[i]).on('connection', function(socket){
+			try{adminSocket.emit('startedGameConnector', games[i]);}catch(e){}
+			return io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
 			});
-		})();
+		})();	
 	}
+	}, 10000);
 })();
