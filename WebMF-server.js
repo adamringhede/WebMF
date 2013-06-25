@@ -193,6 +193,7 @@ Match.prototype.playerJoined = function(from){
 };
 
 function MatchMaster(){
+	this._onChanged = function(){};
 	this.playerQueue = [];
 	this.matches = [];
 	this.addMatch();
@@ -218,17 +219,23 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			player.socket.set('currentMatchNumber', matchNumber);
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
 	}
-}
+};
 MatchMaster.prototype.addMatch = function(specifications){
 	this.matches.push(new Match(specifications)); // add change handler here
-}
+	this.changed();
+};
 MatchMaster.prototype.getMatch = function(matchNumber){
 	return this.matches[matchNumber];
-}
+};
 MatchMaster.prototype.removeMatch = function(matchNumber){
-	//this.matches.splice(matchNumber,1); // This would change the everything
+	//this.matches.splice(matchNumber,1); // This would change everything
 	this.matches[matchNumber] = null;
-}
+	this.changed();
+};
+MatchMaster.prototype.changed = function(f){
+	if(!f) this._onChanged(this.matches);
+	else this._onChanged = f;
+};
 MatchMaster.prototype.removePlayerFromQueue = function(playerId){
 	for(var i = 0; i < this.playerQueue.length; i++){
 		if(this.playerQueue[i].socket.id === playerId){
@@ -281,13 +288,13 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	this.playerQueue.splice(queuePos, 0, pl);
 	
 	return false;
-}
+};
 MatchMaster.prototype.addPlayerToQueue = function(player){
 	if(!player instanceof Player) return false;
 	player.socket.emit('matchmaking queue');
 	this.playerQueue.push(player);
 	this.putPlayersInMatches();
-}
+};
 
 
 
@@ -499,6 +506,9 @@ function gameConnectionHandler(socket, matchMaster){
 				max: games.length
 			});
 			var matchMaster = new MatchMaster();
+			matchMaster.changed(function(matches){
+				broadcastAdmins(matches);
+			});
 			return io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
 			});
