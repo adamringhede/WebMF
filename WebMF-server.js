@@ -488,10 +488,10 @@ function gameConnectionHandler(socket, matchMaster){
 		//	running[gameName]
 		});
 	});
-	function broadcastAdmins(data){
+	function broadcastAdmins(type, data){
 		for(var i = 0; i < adminSockets.length; i++){
 			try{
-				adminSockets[i].emit('startedGameConnector', data);
+				adminSockets[i].emit(type || 'misc', data);
 			}catch(e){}
 		}
 	}
@@ -500,19 +500,19 @@ function gameConnectionHandler(socket, matchMaster){
 	for(var i = 0; i < games.length; i++){
 		running[games[i].name] = (function(){
 			console.log("Started: "+games[i].name);
-			broadcastAdmins({
+			broadcastAdmins('startedGameConnector', {
 				name: games[i].name,
 				index: i,
 				max: games.length
 			});
 			var matchMaster = new MatchMaster();
 			matchMaster.changed(function(matches){
-				broadcastAdmins(matches);
+				broadcastAdmins('matchesChanged', {game:games[i].name, matches:matches);
 			});
 			return io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
 			});
 		})();	
 	}
-	}, 10000);
+	}, 2000);
 })();
