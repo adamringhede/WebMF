@@ -197,11 +197,10 @@ function MatchMaster(){
 	this.matches = [];
 	this.addMatch();
 	this.addMatch();
-	this.addMatch();
 	var self = this;
 	this.coordinatorInterval = setInterval(function(){
 		self.putPlayersInMatches();
-	}, 5000);
+	}, 3000);
 }
 MatchMaster.prototype.putPlayersInMatches = function(){
 	if(this.playerQueue.length !== 0){
