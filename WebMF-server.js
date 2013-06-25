@@ -192,8 +192,10 @@ Match.prototype.playerJoined = function(from){
 	}
 };
 
-function MatchMaster(){
+function MatchMaster(gameName){
 	this._onChanged = function(){};
+	this._onQueueChanged = function(){};
+	this.belongsToGame = gameName || "";
 	this.playerQueue = [];
 	this.matches = [];
 	this.addMatch();
@@ -233,13 +235,18 @@ MatchMaster.prototype.removeMatch = function(matchNumber){
 	this.changed();
 };
 MatchMaster.prototype.changed = function(f){
-	if(!f) this._onChanged(this.matches);
+	if(!f) this._onChanged(this.matches, this.belongsToGame);
 	else this._onChanged = f;
+};
+MatchMaster.prototype.queueChanged = function(f){
+	if(!f) this._onQueueChanged(this.playerQueue.length, this.belongsToGame);
+	else this._onQueueChanged = f;
 };
 MatchMaster.prototype.removePlayerFromQueue = function(playerId){
 	for(var i = 0; i < this.playerQueue.length; i++){
 		if(this.playerQueue[i].socket.id === playerId){
 			this.players.splice(i,1);
+			this.queueChanged();
 			return true;
 		}
 	}
@@ -293,6 +300,7 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	if(!player instanceof Player) return false;
 	player.socket.emit('matchmaking queue');
 	this.playerQueue.push(player);
+	this.queueChanged();
 	this.putPlayersInMatches();
 };
 
@@ -505,9 +513,12 @@ function gameConnectionHandler(socket, matchMaster){
 				index: i,
 				max: games.length
 			});
-			var matchMaster = new MatchMaster();
-			matchMaster.changed(function(matches){
-				broadcastAdmins('matchesChanged', {game:games[i].name, matches:matches);
+			var matchMaster = new MatchMaster(games[i].name);
+			matchMaster.changed(function(matches, gameName){
+				broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
+			});
+			matchMaster.queueChanged(function(queue, gameName){
+				broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
 			});
 			return io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);

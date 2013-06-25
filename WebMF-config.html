@@ -12,7 +12,14 @@
 	var socket = io.connect('Adams-MacBook-Pro.local:8084');
 	socket.on('startedGameConnector', function(gameName){
 		console.log("STARTED " + gameName);
-	})
+	});
+	socket.on('playerQueueChanged', function(data){
+		console.log("playerQueueChanged " + data);
+	});
+	socket.on('matchesChanged', function(data){
+		console.log("matchesChanged " + data);
+	});
+	
 })();
 </script>
 
