@@ -11,7 +11,6 @@ To create a platform for developers making multiplayer games. It should have an 
 ### Features
 	– Matchmaking
 		- Be put in a match automatically. 
-		- Have a backup routine for when a 
 		- Use filters for the match-selection.
 			- (Planned #1) Custom filters
 			- Filters for minimum players in match, and maximum number of spots in match. 
@@ -36,6 +35,7 @@ To create a platform for developers making multiplayer games. It should have an 
 		- Send data to the host
 	– Send faster but unreliable messages
 	– Kick a player from the match.
+	– Host several multiplayer games on the same node service. 
 	– (Planned #1) Join a specified ongoing open match without the use of matchmaking
 		- If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
@@ -151,7 +151,7 @@ match.bind("playerMoved", function(data){
 To trigger this event another client could use the following code.
 ```JS
 match.trigger("playerMoved", {
-	playerNickname:"John Does",
+	playerNickname:"John Doe",
 	position: {
 		x: 24,
 		y:5
