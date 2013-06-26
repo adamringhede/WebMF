@@ -2,6 +2,12 @@
 var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 	reconnect:true
 });
+socket.on('error', function(){
+	console.log("Could not connect.");
+});
+socket.on('connect', function(){
+	console.log("connected!");
+});
 
 socket.on('disconnect', function(){
 	console.log('got disconnected');
