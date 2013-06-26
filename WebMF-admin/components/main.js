@@ -2,9 +2,6 @@
 var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 	reconnect:true
 });
-socket.on('startedGameConnector', function(gameName){
-	console.log("STARTED " + gameName);
-});
 
 socket.on('disconnect', function(){
 	console.log('got disconnected');
@@ -37,14 +34,11 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 	initialize: function (models,options) {
 		var self = this;
 		socket.on('playerQueueChanged', function(data){
-			console.log("playerQueueChanged " + data);
 			var monitorToChange = self.findWhere({name:data.game});
 			monitorToChange.set('playersInQueue', data.playerQueue);
 		});
 		socket.on('matchesChanged', function(data){
-			console.log("matchesChanged " + data);
 			var monitorToChange = self.findWhere({name:data.game});
-			console.log(data.matches);
 			monitorToChange.set('matches', data.matches.length);
 		});
 		socket.on('startedGameConnector', function(data){
@@ -52,18 +46,20 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 			monitorToChange.set('running', true);
 		});
 		socket.on('gotServerStates', function(games){
-			//console.log(games);
 			for(var i in games) {
-				console.log(games[i]);
 				var monitorToChange = self.findWhere({name:games[i].game});
 				if(monitorToChange){
-					monitorToChange.set('running', true);
-					monitorToChange.set('matches', games[i].matches.length);
-					monitorToChange.set('playersInQueue', games[i].playerQueue.length);
+					if(games[i].running){
+						monitorToChange.set('running', true);
+						monitorToChange.set('matches', games[i].matches.length);
+						monitorToChange.set('playersInQueue', games[i].playerQueue.length);
+					} else {
+						monitorToChange.set('running', false);
+						monitorToChange.set('matches', 0);
+						monitorToChange.set('playersInQueue', 0);
+					}
 				}
 			}
-//			var monitorToChange = self.findWhere({name:data.name});
-//			monitorToChange.set('running', true);
 		});
 	}
 });

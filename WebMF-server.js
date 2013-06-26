@@ -533,6 +533,12 @@ function gameConnectionHandler(socket, matchMaster){
 	setTimeout(function(){
 	// Start games in config file
 	for(var i = 0; i < games.length; i++){
+		if(!games[i].shouldRun){
+			running[games[i].name] = {
+				game: games[i].name,
+				running: false
+			};
+		}
 		running[games[i].name] = (function(){
 			console.log("Started: "+games[i].name);
 			broadcastAdmins('startedGameConnector', {
@@ -554,6 +560,7 @@ function gameConnectionHandler(socket, matchMaster){
 				game: games[i].name,
 				matches: matchMaster.matches,
 				playerQueue: matchMaster.playerQueue,
+				running: true
 			};
 		})();	
 	}
