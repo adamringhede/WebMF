@@ -500,7 +500,15 @@ function gameConnectionHandler(socket, matchMaster){
 		socket.on('shutDown', function(gameName){
 		//	running[gameName]
 		});
+		socket.on('onDisconnect', function(){
+			for(var i = 0; i < adminSockets.length; i++){
+				if(socket.id === adminSockets[i]){
+					adminSockets.splice(i,1);
+				}
+			}
+		});
 	});
+	
 	for(var i = 0; i < adminSockets.length; i++){
 		adminSockets[i].on('getConnectors', function(){
 			adminSockets[i].emit('gotConnectors', games);
