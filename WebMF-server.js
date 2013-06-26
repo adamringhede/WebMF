@@ -216,6 +216,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 				players.push(match.players[i].info());
 			}
 			self.removePlayerFromQueue(player.socket.id);
+			self.queueChanged();
 			match.addPlayer(player);
 			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info()});
 			match.playerJoined(player);
@@ -244,11 +245,10 @@ MatchMaster.prototype.queueChanged = function(f){
 	else this._onQueueChanged = f;
 };
 MatchMaster.prototype.removePlayerFromQueue = function(playerId){
-	//console.log("removing ASDASDKNJKJASDKJNASDKJSAKDJNJKASDNKJASDJNKNAJKSDNJKAS " + playerId);
 	for(var i = 0; i < this.playerQueue.length; i++){
 		if(this.playerQueue[i].socket.id === playerId){
-			this.players.splice(i,1);
-			this.queueChanged();
+			this.playerQueue.splice(i,1);
+		//	this.queueChanged();
 			return true;
 		}
 	}
