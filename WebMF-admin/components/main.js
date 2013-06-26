@@ -82,8 +82,13 @@ var GameMonitorView = Backbone.View.extend({
 		this.model.on('change', this.render, this);
 	},
 	render: function() {
-	      this.$el.html(this.template(this.model.toJSON()));
-	      return this;
+		this.$el.html(this.template(this.model.toJSON()));
+		if(this.model.get('running') !== "Ready"){
+			this.$el.find('span.label').removeClass('label-success').addClass('label-default');
+		} else {
+			this.$el.find('span.label').removeClass('label-default').addClass('label-success');
+		}
+		return this;
 	}
 });
 
