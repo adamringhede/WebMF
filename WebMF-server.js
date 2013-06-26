@@ -205,7 +205,7 @@ function MatchMaster(gameName){
 		self.putPlayersInMatches();
 	}, 3000);
 }
-MatchMaster.prototype.putPlayersInMatches = function(){
+MatchMaster.prototype.putPlayersInMatches = function(){ 
 	if(this.playerQueue.length !== 0){
 		var self = this;
 		this.findOpenMatch(function(match, matchNumber){
@@ -215,6 +215,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			for(var i = 0; i < match.players.length; i++) {
 				players.push(match.players[i].info());
 			}
+			self.removePlayerFromQueue(player.socket.id);
 			match.addPlayer(player);
 			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info()});
 			match.playerJoined(player);
@@ -243,6 +244,7 @@ MatchMaster.prototype.queueChanged = function(f){
 	else this._onQueueChanged = f;
 };
 MatchMaster.prototype.removePlayerFromQueue = function(playerId){
+	//console.log("removing ASDASDKNJKJASDKJNASDKJSAKDJNJKASDNKJASDJNKNAJKSDNJKAS " + playerId);
 	for(var i = 0; i < this.playerQueue.length; i++){
 		if(this.playerQueue[i].socket.id === playerId){
 			this.players.splice(i,1);
