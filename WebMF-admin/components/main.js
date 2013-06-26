@@ -26,7 +26,7 @@ function fetchGameConnectors(func){
 var GameMonitor = Backbone.Model.extend({
   defaults: {
     name: '',
-    running: false,
+    running: "Suspended",
 	playersInQueue: 0,
 	matches: 0
   }
@@ -49,18 +49,18 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 		});
 		socket.on('startedGameConnector', function(data){
 			var monitorToChange = self.findWhere({name:data.name});
-			monitorToChange.set('running', true);
+			monitorToChange.set('running', "Ready");
 		});
 		socket.on('gotServerStates', function(games){
 			for(var i in games) {
 				var monitorToChange = self.findWhere({name:games[i].game});
 				if(monitorToChange){
 					if(games[i].running){
-						monitorToChange.set('running', true);
+						monitorToChange.set('running', "Ready");
 						monitorToChange.set('matches', games[i].matches.length);
 						monitorToChange.set('playersInQueue', games[i].playerQueue.length);
 					} else {
-						monitorToChange.set('running', false);
+						monitorToChange.set('running', "Suspended");
 						monitorToChange.set('matches', 0);
 						monitorToChange.set('playersInQueue', 0);
 					}

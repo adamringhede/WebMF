@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Untitled Document</title>
+<link href="libs/bootstrap 2/css/bootstrap.css" media="screen" rel="stylesheet" type="text/css" />
 <style>
 *{position:relative;margin:0px;padding:0px;font-family:arial;}
 .headGradient{
@@ -38,11 +39,35 @@
 }
 .gameBox{
 	width:100%;
-	height:auto;
+	height:100px;
+	top:0px;
 	border-bottom:1px solid #ccc;
+}
+.gameBox span.label{
+	right:0px;
+	float:right;
+	clear:both;
 }
 .gameBox:last-child{
 	border-bottom:none;
+}
+.gameBox div.infoBox{
+	float:right;
+	right:20px;
+	padding-top:10px;
+}
+.gameBox h5{
+	position:relative;
+	float:left;
+	left:20px;
+}
+.gameBox div.infoBox p{
+	text-align:right;
+	float:right;
+	clear:both;
+	padding:0px;
+	margin:3px;
+	color:#777;
 }
 </style>
 </head>
@@ -54,10 +79,12 @@
 <script type="text/javascript" src="libs/backbone-min.js"></script>
 
 <script type="text/template" id="item-template">
-<p><%- name %></p>
-<p><%- running %></p>
+<h5><%- name %></h5>
+<div class="infoBox">
+<span class="label label-success"><%- running %></span>
 <p>In queue: <%- playersInQueue %></p>
 <p>Matches: <%- matches %></p>
+</div>
 </script>
 
 <div id="gameMonitorsWrapper">
