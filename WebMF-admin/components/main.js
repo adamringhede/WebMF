@@ -45,6 +45,10 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 			var monitorToChange = self.findWhere({name:data.game});
 			monitorToChange.set('matches', data.matches.length);
 		});
+		socket.on('startedGameConnector', function(data){
+			var monitorToChange = self.findWhere({name:data.name});
+			monitorToChange.set('running', true);
+		});
 	}
 });
 var GameMonitors = new GameMonitorsCollection;
