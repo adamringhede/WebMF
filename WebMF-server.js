@@ -487,12 +487,12 @@ function gameConnectionHandler(socket, matchMaster){
 
 	
 (function(){
-	var configurations = socketio.listen(8084),
+	var //configurations = socketio.listen(8084),
 		games = require('./config').games,
 		running = {},
 		adminSockets = [];
 	
-	configurations.on('connection', function(socket){
+	io.of('/administration').on('connection', function(socket){
 		adminSockets.push(socket);
 		socket.on('getConnectors', function(){
 			socket.emit('gotConnectors', games);

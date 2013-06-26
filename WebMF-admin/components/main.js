@@ -1,14 +1,15 @@
 
-	var socket = io.connect('Adams-MacBook-Pro.local:8084', {
-		reconnect:true
-	});
-	socket.on('startedGameConnector', function(gameName){
-		console.log("STARTED " + gameName);
-	});
-	
-	socket.on('disconnect', function(){
-		console.log('got disconnected');
-	});
+var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
+	reconnect:true
+});
+socket.on('startedGameConnector', function(gameName){
+	console.log("STARTED " + gameName);
+});
+
+socket.on('disconnect', function(){
+	console.log('got disconnected');
+});
+
 function fetchGameConnectors(func){
 	socket.emit('getConnectors');
 	socket.on('gotConnectors', func);
