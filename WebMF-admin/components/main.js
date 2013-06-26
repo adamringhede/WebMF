@@ -44,11 +44,26 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 		socket.on('matchesChanged', function(data){
 			console.log("matchesChanged " + data);
 			var monitorToChange = self.findWhere({name:data.game});
+			console.log(data.matches);
 			monitorToChange.set('matches', data.matches.length);
 		});
 		socket.on('startedGameConnector', function(data){
 			var monitorToChange = self.findWhere({name:data.name});
 			monitorToChange.set('running', true);
+		});
+		socket.on('gotServerStates', function(games){
+			//console.log(games);
+			for(var i in games) {
+				console.log(games[i]);
+				var monitorToChange = self.findWhere({name:games[i].game});
+				if(monitorToChange){
+					monitorToChange.set('running', true);
+					monitorToChange.set('matches', games[i].matches.length);
+					monitorToChange.set('playersInQueue', games[i].playerQueue.length);
+				}
+			}
+//			var monitorToChange = self.findWhere({name:data.name});
+//			monitorToChange.set('running', true);
 		});
 	}
 });

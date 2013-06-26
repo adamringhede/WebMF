@@ -76,6 +76,7 @@ Match.prototype.onStateChange = function(path, obj){
 		// since it is just a notification.
 		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
 	}
+	this.change();
 };
 Match.prototype.getState = function(path){
 	if(!path) return this.state;
@@ -111,11 +112,11 @@ Match.prototype.getState = function(path){
  */
 Match.prototype.addPlayer = function(player){
 	this.players.push(player);
+	this.change();
 	player.inmatch = true;
 	if(this.players.length === 1){
 		this.host = player;
 	}
-	this.change();
 };
 /* Remove a player with said id
  */
@@ -225,7 +226,12 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 	}
 };
 MatchMaster.prototype.addMatch = function(specifications){
-	this.matches.push(new Match(specifications)); // add change handler here
+	var nm = new Match(specifications),
+		self = this;
+	this.matches.push(nm);
+	nm.change(function(){
+		self.changed();
+	});
 	this.changed();
 };
 MatchMaster.prototype.getMatch = function(matchNumber){
@@ -306,9 +312,6 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.putPlayersInMatches();
 };
 
-
-
-//var game = io.of('/game').on('connection', function (socket) {
 function gameConnectionHandler(socket, matchMaster){
 //	var matchMaster = new MatchMaster(); // MATCHMASTER IS IN A LOCAL SCOPE HERE: ITS A NONO.
 	// SHOULD BE ONE MATCHMASTER PER GAME
@@ -487,13 +490,15 @@ function gameConnectionHandler(socket, matchMaster){
 
 	
 (function(){
-	var //configurations = socketio.listen(8084),
-		games = require('./config').games,
+	var games = require('./config').games,
 		running = {},
 		adminSockets = [];
 	
 	io.of('/administration').on('connection', function(socket){
 		adminSockets.push(socket);
+		setTimeout(function(){
+			socket.emit('gotServerStates', running)
+		}, 400);
 		socket.on('getConnectors', function(){
 			socket.emit('gotConnectors', games);
 		});
@@ -521,6 +526,10 @@ function gameConnectionHandler(socket, matchMaster){
 			}catch(e){}
 		}
 	}
+	function pushServerStates(){
+		broadcastAdmins('gotServerStates', running);
+	}
+	setInterval(pushServerStates, 7000);
 	setTimeout(function(){
 	// Start games in config file
 	for(var i = 0; i < games.length; i++){
@@ -538,9 +547,14 @@ function gameConnectionHandler(socket, matchMaster){
 			matchMaster.queueChanged(function(queue, gameName){
 				broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
 			});
-			return io.of('/'+games[i].name).on('connection', function(socket){
+			io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
 			});
+			return {
+				game: games[i].name,
+				matches: matchMaster.matches,
+				playerQueue: matchMaster.playerQueue,
+			};
 		})();	
 	}
 	}, 2000);
