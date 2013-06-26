@@ -5,9 +5,6 @@
 	socket.on('startedGameConnector', function(gameName){
 		console.log("STARTED " + gameName);
 	});
-	socket.on('playerQueueChanged', function(data){
-		console.log("playerQueueChanged " + data);
-	});
 	socket.on('matchesChanged', function(data){
 		console.log("matchesChanged " + data);
 	});
@@ -38,10 +35,12 @@ var GameMonitor = Backbone.Model.extend({
 var GameMonitorsCollection = Backbone.Collection.extend({
 	model: GameMonitor,
 	initialize: function (models,options) {
-	//	this.add(models);
-		/*for(var i = 0; i < models.length; i++){
-			this.add(models[i]);
-		}*/
+		var self = this;
+		socket.on('playerQueueChanged', function(data){
+			console.log("playerQueueChanged " + data);
+			var monitorToChange = self.findWhere({name:data.game});
+			monitorToChange.set('playersInQueue', data.playerQueue);
+		});
 	}
 });
 var GameMonitors = new GameMonitorsCollection;
