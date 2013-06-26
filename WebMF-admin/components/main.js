@@ -75,9 +75,10 @@ var GameMonitors = new GameMonitorsCollection;
 /// GameMonitorView
 ///
 var GameMonitorView = Backbone.View.extend({
-	tagName: 'li',
+	tagName: 'div',
 	template: _.template($('#item-template').html()),
 	initialize: function(){
+		this.$el.addClass('gameBox');
 		this.model.on('change', this.render, this);
 	},
 	render: function() {

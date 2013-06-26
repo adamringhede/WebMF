@@ -3,6 +3,48 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Untitled Document</title>
+<style>
+*{position:relative;margin:0px;padding:0px;font-family:arial;}
+.headGradient{
+	background: rgb(247,247,247); /* Old browsers */
+	background: -moz-linear-gradient(top, rgba(247,247,247,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(247,247,247,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(247,247,247,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(247,247,247,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(247,247,247,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+}
+#gameMonitorsWrapper{
+	border:1px solid #ccc;
+	width:500px;
+	left:20px;
+	border-radius:5px;
+	overflow:hidden;
+}
+#gameMonitorsWrapper .head{
+	width:auto;
+	font-size:18px;
+	padding:7px;
+	padding-left:15px;
+	font-weight:bold;
+	text-align:left;
+	background-color:#ddd;
+	color:#444;
+	border-bottom:1px solid #ccc;
+}
+#gamesMonitors{
+	min-height:100px;
+}
+.gameBox{
+	width:100%;
+	height:auto;
+	border-bottom:1px solid #ccc;
+}
+.gameBox:last-child{
+	border-bottom:none;
+}
+</style>
 </head>
 <body>
 <h1>WebMF configuration</h1>
@@ -11,16 +53,18 @@
 <script type="text/javascript" src="libs/underscore-min.js"></script>
 <script type="text/javascript" src="libs/backbone-min.js"></script>
 
-
 <script type="text/template" id="item-template">
-<h3><%- name %></h3>
+<p><%- name %></p>
 <p><%- running %></p>
-<p><%- playersInQueue %></p>
-<p><%- matches %></p>
+<p>In queue: <%- playersInQueue %></p>
+<p>Matches: <%- matches %></p>
 </script>
 
+<div id="gameMonitorsWrapper">
+<div class="head headGradient">Games</div>
 <div id="gamesMonitors">
 	
+</div>
 </div>
 
 <!-- Components -->
