@@ -492,10 +492,18 @@ function gameConnectionHandler(socket, matchMaster){
 	
 	configurations.on('connection', function(socket){
 		adminSockets.push(socket);
+		socket.on('getConnectors', function(){
+			socket.emit('gotConnectors', games);
+		});
 		socket.on('shutDown', function(gameName){
 		//	running[gameName]
 		});
 	});
+	for(var i = 0; i < adminSockets.length; i++){
+		adminSockets[i].on('getConnectors', function(){
+			adminSockets[i].emit('gotConnectors', games);
+		});
+	}
 	function broadcastAdmins(type, data){
 		for(var i = 0; i < adminSockets.length; i++){
 			try{

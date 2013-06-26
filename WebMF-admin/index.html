@@ -6,30 +6,26 @@
 </head>
 <body>
 <h1>WebMF configuration</h1>
-<script src="./../socket.io.min.js"></script>
-<script type="text/javascript" src="./libs/jquery-1.10.1.min.js"></script>
-<script type="text/javascript" src="./libs/backbone-min.js"></script>
-<script type="text/javascript" src="./libs/handlebars.js"></script>
-<script>
-(function(){
-	var socket = io.connect('Adams-MacBook-Pro.local:8084', {
-		reconnect:true
-	});
-	socket.on('startedGameConnector', function(gameName){
-		console.log("STARTED " + gameName);
-	});
-	socket.on('playerQueueChanged', function(data){
-		console.log("playerQueueChanged " + data);
-	});
-	socket.on('matchesChanged', function(data){
-		console.log("matchesChanged " + data);
-	});
-	socket.on('disconnect', function(){
-		console.log('got disconnected');
-	});
-	
-})();
+<script src="../socket.io.min.js"></script>
+<script type="text/javascript" src="libs/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="libs/underscore-min.js"></script>
+<script type="text/javascript" src="libs/backbone-min.js"></script>
+
+
+<script type="text/template" id="item-template">
+<h3><%- name %></h3>
+<p><%- running %></p>
+<p><%- playersInQueue %></p>
 </script>
+
+<div id="gamesMonitors">
+	
+</div>
+
+<!-- Components -->
+<script type="text/javascript" src="./components/main.js"></script>
+
+
 
 
 </body>

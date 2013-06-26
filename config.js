@@ -3,11 +3,13 @@ var config={}
 config.games = [
 	{
 		name:"Shooterly",
-		port:"4492" 
+		running:false,
+		playersInQueue:0
 	},
 	{
 		name:"Bouble",
-		port:"3452"
+		running:false,
+		playersInQueue:0
 	}
 ];
 	
