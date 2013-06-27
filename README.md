@@ -36,13 +36,13 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Send faster but unreliable messages
 	– Kick a player from the match.
 	– Host several multiplayer games on the same node service. 
+	– Monitor the activity of the server and all running games with a GUI.
 	– (Planned #1) Join a specified ongoing open match without the use of matchmaking
 		- If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
 	– (Planned #2) Massive Multiplayer matches for huge games with different needs.
 		- Save state to permanent storage
-	– (Planned #2) Use plugins on top of the platform. 
-	– (Planned #2) A program to run from a CLI to manage plugins. (list, update, install, get)
+	– (Planned #2) Use plugins on top of the platform.
 	
 ### Plugins
 	– (Planned) Graphical UI for matchmaking
