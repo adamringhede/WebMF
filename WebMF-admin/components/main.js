@@ -28,7 +28,8 @@ var GameMonitor = Backbone.Model.extend({
     name: '',
     running: "Suspended",
 	playersInQueue: 0,
-	matches: 0
+	matches: 0,
+	matchInfos: []
   }
 });
 
@@ -58,6 +59,7 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 					if(games[i].running){
 						monitorToChange.set('running', "Ready");
 						monitorToChange.set('matches', games[i].matches.length);
+						monitorToChange.set('matchInfos', games[i].matches);
 						monitorToChange.set('playersInQueue', games[i].playerQueue.length);
 					} else {
 						monitorToChange.set('running', "Suspended");
@@ -87,6 +89,24 @@ var GameMonitorView = Backbone.View.extend({
 			this.$el.find('span.label').removeClass('label-success').addClass('label-default');
 		} else {
 			this.$el.find('span.label').removeClass('label-default').addClass('label-success');
+		}
+	//	this.$el.find('div.matchesDisplay').empty();
+		for(var i = 0, l = this.model.get('matches'); i < l; i++){
+			var match = this.model.get('matchInfos')[i];
+			if(match === undefined) continue;
+			if(match === null) {
+				this.$el.find('div.matchesDisplay').append($('<div style="width:'+100/l+'%" class="match">'));
+			} else {
+				console.log(match);
+				this.$el.find('div.matchesDisplay').append(
+					$('<div style="width:'+100/l+'%" class="match inProgress">')
+						.data('title', "Players: " + match.players.length + "/" + match.maxSize + "<br/>Closed: " + match.closed)
+						.tooltip({
+							placement:'top',
+							html:true
+						})
+				);
+			}
 		}
 		return this;
 	}
