@@ -1,4 +1,4 @@
-
+//var socket = io.connect(window.location.hostname+':8083/administration', {
 var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 	reconnect:true
 });
