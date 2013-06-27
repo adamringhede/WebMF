@@ -2,9 +2,7 @@
 var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 	reconnect:true
 });
-socket.on('error', function(){
-	console.log("Could not connect.");
-});
+
 socket.on('connect', function(){
 	console.log("connected!");
 });
@@ -118,6 +116,10 @@ var GameMonitorView = Backbone.View.extend({
 var AppView = Backbone.View.extend({
 	el: $("#gamesMonitors"),
 	initialize: function() {
+		var self = this;
+		socket.on('error', function(){
+			self.$el.addClass('connectionError');
+		});
 		this.listenTo(GameMonitors, 'add', this.addOne);
 		fetchGameConnectors(function(games){
 			GameMonitors.set(games);
