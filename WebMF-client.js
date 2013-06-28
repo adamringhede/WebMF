@@ -264,7 +264,7 @@ MPSession.prototype.getTimeElapsed = function(){
 };
 /* Starts the matchmaking process. The player is first put on a queue, 
  * waiting for his turn to be put in a match. 
- * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function, waitForOtherPlayers:bool}
+ * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function}
  */
 MPSession.prototype.startMatchmaking = function(parameters){
 	if(this.matchInProgress) throw "Can only have one match in progress per session.";
