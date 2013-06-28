@@ -284,12 +284,23 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
-		self._onMatchFound(nm);
+		//self._onMatchFound(nm);
 		self.matchInProgress = true;
 		nm._notPartOfApi_onLeaveMatch = function(){
 			self.matchInProgress = false;
 			delete nm;
 		};
+		
+		if(nm.players.size() >= 2){
+			self._onMatchFound(nm);
+			return;
+		}
+		nm.onPlayerJoined(function(){ 
+			if(nm.players.size() >= 2){
+				self._onMatchFound(nm);
+			}
+		});
+		
 	});
 };
 
