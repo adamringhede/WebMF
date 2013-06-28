@@ -3,9 +3,7 @@ var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 	reconnect:true
 });
 
-socket.on('connect', function(){
-	console.log("connected!");
-});
+
 
 
 
@@ -120,6 +118,9 @@ var AppView = Backbone.View.extend({
 		});
 		socket.on('disconnect', function(){
 			self.$el.addClass('disconnected');
+		});
+		socket.on('connect', function(){
+			self.$el.removeClass('disconnected');
 		});
 		this.listenTo(GameMonitors, 'add', this.addOne);
 		fetchGameConnectors(function(games){
