@@ -7,9 +7,7 @@ socket.on('connect', function(){
 	console.log("connected!");
 });
 
-socket.on('disconnect', function(){
-	console.log('got disconnected');
-});
+
 
 function fetchGameConnectors(func){
 	socket.emit('getConnectors');
@@ -119,6 +117,9 @@ var AppView = Backbone.View.extend({
 		var self = this;
 		socket.on('error', function(){
 			self.$el.addClass('connectionError');
+		});
+		socket.on('disconnect', function(){
+			self.$el.addClass('disconnected');
 		});
 		this.listenTo(GameMonitors, 'add', this.addOne);
 		fetchGameConnectors(function(games){
