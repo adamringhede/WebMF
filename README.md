@@ -126,7 +126,7 @@ the maximum number of players there will be able to be in a match.
 session.onConnect(function(){
 	session.startMatchmaking({
 		filters: {
-			min: 0,
+			min: 2,
 			max: 4
 		},
 		onQueue: function(){
