@@ -1,4 +1,5 @@
-var socketio = require('socket.io');
+var socketio = require('socket.io'),
+	fs = require('fs');
 var io = socketio.listen(8083);
 
 function Player(playerName, sock){
@@ -490,7 +491,7 @@ function gameConnectionHandler(socket, matchMaster){
 
 	
 (function(){
-	var games = require('./config').games,
+	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));// require('./config').games,
 		running = {},
 		adminSockets = [];
 	
@@ -500,7 +501,7 @@ function gameConnectionHandler(socket, matchMaster){
 	//	}
 		setTimeout(function(){
 		//	socket.emit('gotServerStates', running)
-		}, 10000);
+		}, 1000);
 		socket.on('getConnectors', function(){
 			socket.emit('gotConnectors', games);
 		});
