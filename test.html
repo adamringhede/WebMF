@@ -25,6 +25,7 @@ function init(name, min, game){
 			onQueue: function(){
 				console.log("Put in queue");
 			},
+			waitForOtherPlayers: true,
 			onMatchFound: function(newmatch){
 				console.log("Match found");
 				match = newmatch;

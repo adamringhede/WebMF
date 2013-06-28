@@ -264,17 +264,20 @@ MPSession.prototype.getTimeElapsed = function(){
 };
 /* Starts the matchmaking process. The player is first put on a queue, 
  * waiting for his turn to be put in a match. 
- * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function}
+ * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function, waitForOtherPlayers:bool}
  */
 MPSession.prototype.startMatchmaking = function(parameters){
 	if(this.matchInProgress) throw "Can only have one match in progress per session.";
-	var self = this;
+	var self = this,
+		waitForMin = parameters.filters.min || 0;
+	if(parameters.waitForOtherPlayers) {
+		parameters.filters.min = 0;
+	}
 	this._putOnMatchmakingQueue = parameters.onQueue;
 	this._onMatchFound = parameters.onMatchFound;
 	this.socket.emit('matchmake', parameters.filters);
 	this.socket.on('match found', function (data) {
-		//self.matchNumber = data.match;
-		//self.players.fill(data.players);
+		
 		var nm;
 		if(parameters.type === "TurnBased"){
 			nm = new MPTurnBasedMatch(self.socket, data.match, data.players);
@@ -284,23 +287,26 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
-		//self._onMatchFound(nm);
+		if(!parameters.waitForOtherPlayers) {
+			self._onMatchFound(nm);
+		}
 		self.matchInProgress = true;
 		nm._notPartOfApi_onLeaveMatch = function(){
 			self.matchInProgress = false;
 			delete nm;
 		};
 		
-		if(nm.players.size() >= 2){
-			self._onMatchFound(nm);
-			return;
-		}
-		nm.onPlayerJoined(function(){ 
-			if(nm.players.size() >= 2){
+		if(parameters.waitForOtherPlayers === true){
+			if(nm.players.size() >= waitForMin){
 				self._onMatchFound(nm);
+				return;
 			}
-		});
-		
+			nm.onPlayerJoined(function(){ 
+				if(nm.players.size() >= waitForMin){
+					self._onMatchFound(nm);
+				}
+			});
+		}
 	});
 };
 
