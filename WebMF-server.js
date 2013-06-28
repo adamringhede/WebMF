@@ -495,30 +495,25 @@ function gameConnectionHandler(socket, matchMaster){
 		adminSockets = [];
 	
 	io.of('/administration').on('connection', function(socket){
-		adminSockets.push(socket);
+		//if(adminSockets.indexOf(socket) === -1){
+			adminSockets.push(socket);
+	//	}
 		setTimeout(function(){
-			socket.emit('gotServerStates', running)
-		}, 400);
+		//	socket.emit('gotServerStates', running)
+		}, 10000);
 		socket.on('getConnectors', function(){
 			socket.emit('gotConnectors', games);
 		});
-		socket.on('shutDown', function(gameName){
-		//	running[gameName]
-		});
-		socket.on('onDisconnect', function(){
+		socket.on('diconnect', function(){
+			console.log("DISCONNECTED!");
 			for(var i = 0; i < adminSockets.length; i++){
 				if(socket.id === adminSockets[i]){
 					adminSockets.splice(i,1);
-				}
+			 	}
 			}
 		});
 	});
 	
-	for(var i = 0; i < adminSockets.length; i++){
-		adminSockets[i].on('getConnectors', function(){
-			adminSockets[i].emit('gotConnectors', games);
-		});
-	}
 	function broadcastAdmins(type, data){
 		for(var i = 0; i < adminSockets.length; i++){
 			try{
@@ -532,14 +527,14 @@ function gameConnectionHandler(socket, matchMaster){
 	setInterval(pushServerStates, 7000);
 	setTimeout(function(){
 	// Start games in config file
-	for(var i = 0; i < games.length; i++){
+	for(var i = 0; i < games.length; i++){/*
 		if(!games[i].shouldRun){
 			running[games[i].name] = {
 				game: games[i].name,
 				running: false
 			};
-		}
-		running[games[i].name] = (function(){
+		}*/
+		running[i] = (function(){
 			console.log("Started: "+games[i].name);
 			broadcastAdmins('startedGameConnector', {
 				name: games[i].name,
@@ -548,10 +543,12 @@ function gameConnectionHandler(socket, matchMaster){
 			});
 			var matchMaster = new MatchMaster(games[i].name);
 			matchMaster.changed(function(matches, gameName){
-				broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
+			//	broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
+			pushServerStates();
 			});
 			matchMaster.queueChanged(function(queue, gameName){
-				broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
+			//	broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
+			pushServerStates()
 			});
 			io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);

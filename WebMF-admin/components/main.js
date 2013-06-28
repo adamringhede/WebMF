@@ -47,7 +47,9 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 			monitorToChange.set('running', "Ready");
 		});
 		socket.on('gotServerStates', function(games){
+			console.log("EXECUTED THIS");
 			for(var i in games) {
+				
 				var monitorToChange = self.findWhere({name:games[i].game});
 				if(monitorToChange){
 					if(games[i].running){
@@ -61,6 +63,7 @@ var GameMonitorsCollection = Backbone.Collection.extend({
 						monitorToChange.set('playersInQueue', 0);
 					}
 				}
+				monitorToChange.trigger('change');
 			}
 		});
 	}
@@ -81,16 +84,20 @@ var GameMonitorView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.toJSON()));
 		if(this.model.get('running') !== "Ready"){
 			this.$el.find('span.label').removeClass('label-success').addClass('label-default');
+			return this;
 		} else {
 			this.$el.find('span.label').removeClass('label-default').addClass('label-success');
 		}
 	//	this.$el.find('div.matchesDisplay').empty();
 		for(var i = 0, l = this.model.get('matches'); i < l; i++){
 			var match = this.model.get('matchInfos')[i];
-			if(match === undefined) continue;
+			if(match === undefined) {
+				console.log("UNDEFINED")
+				continue;
+			}
 			if(match === null) {
 				this.$el.find('div.matchesDisplay').append($('<div style="width:'+100/l+'%" class="match">'));
-			} else {
+			} else { 
 				console.log(match);
 				this.$el.find('div.matchesDisplay').append(
 					$('<div style="width:'+100/l+'%" class="match inProgress">')
