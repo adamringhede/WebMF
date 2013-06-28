@@ -264,43 +264,14 @@ MPSession.prototype.getTimeElapsed = function(){
 };
 /* Starts the matchmaking process. The player is first put on a queue, 
  * waiting for his turn to be put in a match. 
- * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function}
+ * parameters = {filters:{max:int, min:int}, onQueue:function, onMatchFound:function, waitForOtherPlayers:bool}
  */
-/*
 MPSession.prototype.startMatchmaking = function(parameters){
 	if(this.matchInProgress) throw "Can only have one match in progress per session.";
 	var self = this;
 	this._putOnMatchmakingQueue = parameters.onQueue;
 	this._onMatchFound = parameters.onMatchFound;
 	this.socket.emit('matchmake', parameters.filters);
-	this.socket.on('match found', function (data) {
-		//self.matchNumber = data.match;
-		//self.players.fill(data.players);
-		var nm;
-		if(parameters.type === "TurnBased"){
-			nm = new MPTurnBasedMatch(self.socket, data.match, data.players);
-		} else {
-			nm = new MPMatch(self.socket, data.match, data.players);
-		}
-		nm.localPlayerId = self.localPlayerId;
-		nm.state = data.state;
-		nm.host = nm.players.get(data.host.id) || data.host.id;
-		self._onMatchFound(nm);
-		self.matchInProgress = true;
-		nm._notPartOfApi_onLeaveMatch = function(){
-			self.matchInProgress = false;
-			delete nm;
-		};
-	});
-};*/
-MPSession.prototype.startMatchmaking = function(parameters){
-	if(this.matchInProgress) throw "Can only have one match in progress per session.";
-	var self = this;
-	this._putOnMatchmakingQueue = parameters.onQueue;
-	this._onMatchFound = parameters.onMatchFound;
-	this.socket.emit('matchmake', parameters.filters);
-	
-	
 	this.socket.on('match found', function (data) {
 		//self.matchNumber = data.match;
 		//self.players.fill(data.players);
