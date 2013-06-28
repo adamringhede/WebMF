@@ -113,14 +113,21 @@ var AppView = Backbone.View.extend({
 	el: $("#gamesMonitors"),
 	initialize: function() {
 		var self = this;
+		var wasDisconnected = false;
 		socket.on('error', function(){
 			self.$el.addClass('connectionError');
 		});
 		socket.on('disconnect', function(){
+			wasDisconnected = true;
 			self.$el.addClass('disconnected');
 		});
 		socket.on('connect', function(){
 			self.$el.removeClass('disconnected');
+			if(!wasDisconnected) return;
+			self.$el.addClass('connected');
+			setTimeout(function() {
+				self.$el.removeClass('connected');
+			}, 3000);
 		});
 		this.listenTo(GameMonitors, 'add', this.addOne);
 		fetchGameConnectors(function(games){
