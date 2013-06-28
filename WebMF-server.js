@@ -213,12 +213,12 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			// Found an open match
 			var player = self.playerQueue.shift();
 			var players = [];
+			match.addPlayer(player);
 			for(var i = 0; i < match.players.length; i++) {
 				players.push(match.players[i].info());
 			}
 			self.removePlayerFromQueue(player.socket.id);
 			self.queueChanged();
-			match.addPlayer(player);
 			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info()});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
