@@ -312,7 +312,14 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.queueChanged();
 	this.putPlayersInMatches();
 };
-
+MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
+	var match = this.getMatch(matchNum);
+	if(match.players.length < match.maxSize) {
+		match.addPlayer(player);
+	} else {
+		player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
+	}
+};
 
 function gameConnectionHandler(socket, matchMaster){
 //	var matchMaster = new MatchMaster(); // MATCHMASTER IS IN A LOCAL SCOPE HERE: ITS A NONO.
@@ -489,7 +496,9 @@ function gameConnectionHandler(socket, matchMaster){
 		matchMaster.removePlayerFromQueue(playerId);
 	});
 	socket.on('joinMatch', function(matchNum){
-		
+		socket.get('nickname', function(err, player){
+			matchMaster.addPlayerToMatch(player, matchNum);
+		});
 	});
 }
 
