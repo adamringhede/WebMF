@@ -304,12 +304,13 @@ MPSession.prototype.startMatchmaking = function(parameters){
 			nm.onPlayerJoined(function(){ 
 				if(nm.players.size() >= waitForMin){
 					self._onMatchFound(nm);
+					nm.onPlayerJoined(function(){});
 				}
 			});
 		}
 	});
 };
-MPSession.prototype.joinMatch = function(matchNum){
+MPSession.prototype.joinMatch = function(matchNum, onJoin){
 	this.socket.emit('joinMatch', {matchNum:matchNum});
 };
 
