@@ -309,7 +309,9 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		}
 	});
 };
-
+MPSession.prototype.joinMatch = function(matchNum){
+	this.socket.emit('joinMatch', {matchNum:matchNum});
+};
 
 function MPPlayer(data){
 	this.playerId = data.id || "";
