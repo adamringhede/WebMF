@@ -313,6 +313,7 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.putPlayersInMatches();
 };
 
+
 function gameConnectionHandler(socket, matchMaster){
 //	var matchMaster = new MatchMaster(); // MATCHMASTER IS IN A LOCAL SCOPE HERE: ITS A NONO.
 	// SHOULD BE ONE MATCHMASTER PER GAME
@@ -484,8 +485,11 @@ function gameConnectionHandler(socket, matchMaster){
 			}
 		});
 	});
-	socket.on('leaveMatch', function(playerId){
+	socket.on('leaveQueue', function(playerId){
 		matchMaster.removePlayerFromQueue(playerId);
+	});
+	socket.on('joinMatch', function(matchNum){
+		
 	});
 }
 
