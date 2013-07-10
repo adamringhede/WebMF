@@ -318,7 +318,7 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	var match = this.getMatch(matchNum);
-	if(match.players.length < match.maxSize) {
+	if(match.players.length < match.maxSize && match.closed === false) {
 		match.addPlayer(player); // EMIT INFORMATION ABOUT MATCH LIKE THE MATCHMAKING FUNCTION DOES
 		var players = [];
 		for(var i = 0; i < match.players.length; i++) {
