@@ -319,6 +319,7 @@ MPSession.prototype.joinMatch = function(matchNum, onJoin){
 		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
+		if(nm instanceof MPTurnBasedMatch) nm.whosTurn = data.whosTurn;
 		self.matchInProgress = true;
 		if(onJoin) onJoin(nm);
 	});

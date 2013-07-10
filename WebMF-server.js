@@ -320,7 +320,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		for(var i = 0; i < match.players.length; i++) {
 			players.push(match.players[i].info());
 		}
-		player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info()});
+		player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
 		match.playerJoined(player);
 		player.socket.set('currentMatchNumber', matchNum);
 	} else {
