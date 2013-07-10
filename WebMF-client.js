@@ -311,7 +311,16 @@ MPSession.prototype.startMatchmaking = function(parameters){
 	});
 };
 MPSession.prototype.joinMatch = function(matchNum, onJoin){
+	var self = this;
 	this.socket.emit('joinMatch', {matchNum:matchNum});
+	this.socket.on('joinedMatch', function(data){
+		var nm = new MPMatch(self.socket, data.match, data.players);
+		nm.localPlayerId = self.localPlayerId;
+		nm.state = data.state;
+		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
+		self.matchInProgress = true;
+		onJoin(nm);
+	});
 };
 
 function MPPlayer(data){
