@@ -321,6 +321,8 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 			players.push(match.players[i].info());
 		}
 		player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info()});
+		match.playerJoined(player);
+		player.socket.set('currentMatchNumber', matchNum);
 	} else {
 		player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
 	}
