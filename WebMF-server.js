@@ -238,10 +238,14 @@ MatchMaster.prototype.addMatch = function(specifications){
 MatchMaster.prototype.getMatch = function(matchNumber){
 	return this.matches[matchNumber];
 };
-MatchMaster.prototype.removeMatch = function(matchNumber){
-	//this.matches.splice(matchNumber,1); // This would change everything
-	this.matches[matchNumber] = null;
-	this.changed();
+MatchMaster.prototype.removeMatch = function(matchNumber, force){
+	if(this.getMatch(matchNumber).players.length <= 0 || force === true){
+		this.matches[matchNumber] = null;
+		this.changed();
+		return true;
+	} else {
+		return false;
+	}
 };
 MatchMaster.prototype.changed = function(f){
 	if(!f) this._onChanged(this.matches, this.belongsToGame);
