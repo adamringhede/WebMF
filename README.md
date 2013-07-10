@@ -36,7 +36,7 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Send faster but unreliable messages
 	– Kick a player from the match.
 	– Host several multiplayer games on the same node service. 
-	– Monitor the activity of the server and all running games with a GUI.
+	– (Unstable) Monitor the activity of the server and all running games with a GUI.
 	– Join a specified ongoing open match without the use of matchmaking
 		- (Planned #1) If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
@@ -154,7 +154,7 @@ match.trigger("playerMoved", {
 	playerNickname:"John Doe",
 	position: {
 		x: 24,
-		y:5
+		y: 5
 	}
 });
 ```
