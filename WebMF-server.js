@@ -220,7 +220,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			}
 			self.removePlayerFromQueue(player.socket.id);
 			self.queueChanged();
-			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info()});
+			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);

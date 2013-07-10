@@ -281,6 +281,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		var nm;
 		if(parameters.type === "TurnBased"){
 			nm = new MPTurnBasedMatch(self.socket, data.match, data.players);
+			nm.whosTurn = data.whosTurn;
 		} else {
 			nm = new MPMatch(self.socket, data.match, data.players);
 		}
