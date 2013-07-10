@@ -319,7 +319,7 @@ MPSession.prototype.joinMatch = function(matchNum, onJoin){
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
 		self.matchInProgress = true;
-		onJoin(nm);
+		if(onJoin) onJoin(nm);
 	});
 };
 

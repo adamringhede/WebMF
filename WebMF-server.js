@@ -315,7 +315,12 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	var match = this.getMatch(matchNum);
 	if(match.players.length < match.maxSize) {
-		match.addPlayer(player);
+		match.addPlayer(player); // EMIT INFORMATION ABOUT MATCH LIKE THE MATCHMAKING FUNCTION DOES
+		var players = [];
+		for(var i = 0; i < match.players.length; i++) {
+			players.push(match.players[i].info());
+		}
+		player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info()});
 	} else {
 		player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
 	}
@@ -495,9 +500,9 @@ function gameConnectionHandler(socket, matchMaster){
 	socket.on('leaveQueue', function(playerId){
 		matchMaster.removePlayerFromQueue(playerId);
 	});
-	socket.on('joinMatch', function(matchNum){
+	socket.on('joinMatch', function(data){
 		socket.get('nickname', function(err, player){
-			matchMaster.addPlayerToMatch(player, matchNum);
+			matchMaster.addPlayerToMatch(player, data.matchNum);
 		});
 	});
 }
