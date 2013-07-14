@@ -382,9 +382,13 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 					return;
 				}
 				// Create a new match with this state and add player
-				match = new Match(foundMatch.specs); 
-				match.state = foundMatch.state;
-				addToMatch(match, matchNum, player);
+				if(foundMatch){
+					match = new Match(foundMatch.specs); 
+					match.state = foundMatch.state;
+					addToMatch(match, matchNum, player);
+				} else {
+					// Did not find a match, should emit error
+				}
 			})
 		} else {
 			// Match is running
