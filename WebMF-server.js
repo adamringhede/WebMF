@@ -384,6 +384,9 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 				match.state = foundState;
 				addToMatch(match, matchNum, player);
 			})
+		} else {
+			// Match is running
+			addToMatch(match, matchNum, player);
 		}
 	}
 	
