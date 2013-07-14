@@ -1,5 +1,6 @@
 var socketio = require('socket.io'),
-	fs = require('fs');
+	fs = require('fs'),
+	mongo = require('mongoskin');
 var io = socketio.listen(8083);
 
 function Player(playerName, sock){
@@ -511,6 +512,9 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 }
 
+function startServer(){
+	
+}
 	
 (function(){
 	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));// require('./config').games,
