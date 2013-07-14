@@ -38,11 +38,23 @@ function Match(specs){
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
 	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
-	this.id = "";
+	this.id = specs ? (specs.id ? specs.id : "") : "";
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
 	this.reselectHost();
+	var self = this;
+	
+	if(this.persistant){
+		if(this.id !== ""){
+			// Grab existing match from DB
+			db.state.findOne({_id:this.id}, function(err, foundState){
+				self.state = foundState;
+			});
+		} else {
+			// This is a new persistant match so 
+		}
+	}
 }
 /* Change the state of the match. 
  * @param path = "position/playerId"
@@ -85,7 +97,7 @@ Match.prototype.onStateChange = function(path, obj){
 	this.change();
 	
 	if(this.persistant || this.id !== ""){
-		db.state.update({'_id':this.id}, this.state);
+		db.state.update({_id:this.id}, this.state);
 	}
 };
 Match.prototype.getState = function(path){
