@@ -333,8 +333,6 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 };
 
 function gameConnectionHandler(socket, matchMaster){
-//	var matchMaster = new MatchMaster(); // MATCHMASTER IS IN A LOCAL SCOPE HERE: ITS A NONO.
-	// SHOULD BE ONE MATCHMASTER PER GAME
 	socket.on('set nickname', function (playerName) {
 		socket.set('nickname', new Player(playerName, socket), function () {
 			socket.emit('name set', socket.id);
