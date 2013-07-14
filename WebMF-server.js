@@ -1,7 +1,8 @@
 var socketio = require('socket.io'),
 	fs = require('fs'),
 	mongo = require('mongoskin');
-var io = socketio.listen(8083);
+var io = socketio.listen(8083),
+	db = mongo.db('localhost:27017/WebMF', {safe:true});
 
 function Player(playerName, sock){
 	this.name = playerName || "";
@@ -34,6 +35,7 @@ function Match(specs){
 	this.host = null;
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
+	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
