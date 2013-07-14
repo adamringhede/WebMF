@@ -259,7 +259,15 @@ MatchMaster.prototype.addMatch = function(specifications){
 	this.changed();
 };
 MatchMaster.prototype.getMatch = function(matchNumber){
-	return this.matches[matchNumber];
+	if(typeof matchNumber === 'number'){
+		return this.matches[matchNumber];
+	} else if (typeof matchNumber === 'string' && matchNumber !== ""){
+		for(var i = 0, l = this.matches.length; i<l; i++){
+			if(this.matches[i].id === matchNumber){
+				return this.matches[i];
+			}
+		}
+	}
 };
 MatchMaster.prototype.removeMatch = function(matchNumber, force){
 	if(this.getMatch(matchNumber).players.length <= 0 || force === true){
@@ -341,6 +349,7 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	if(typeof matchNum === 'number'){
+		// Add to an existing match
 		var match = this.getMatch(matchNum);
 		if(match && match.players.length < match.maxSize && match.closed === false) {
 			match.addPlayer(player); 
@@ -354,7 +363,10 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		} else {
 			player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
 		}
-	} 
+	} else if (typeof matchNum === 'string') {
+		// Add to a persistant match
+		
+	}
 };
 
 function gameConnectionHandler(socket, matchMaster){
