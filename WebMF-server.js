@@ -4,7 +4,7 @@ var socketio = require('socket.io'),
 var io = socketio.listen(8083),
 	db = mongo.db('localhost:27017/WebMF', {safe:true});
 	
-db.bind('state');
+db.bind('match');
 
 function Player(playerName, sock){
 	this.name = playerName || "";
@@ -32,13 +32,13 @@ Player.prototype.info = function(){
 };
 /* specs = {max:int, min:int}
  */
-function Match(specs){
+function Match(specs, id){
 	this.players = [];
 	this.host = null;
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
 	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
-	this.id = specs ? (specs.id ? specs.id : "") : "";
+	this.id = id || "";
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
@@ -48,12 +48,12 @@ function Match(specs){
 	if(this.persistant){ 
 		if(this.id !== ""){
 			// Grab existing match from DB
-			db.state.findOne({_id:this.id}, function(err, foundState){
-				self.state = foundState;
+			db.match.findOne({_id:this.id}, function(err, foundMatch){
+				self.state = foundMatch.state;
 			});
 		} else {
 			// This is a new persistant match so create a new document
-			db.state.insert({}, function(err, result){
+			db.match.insert({spec: specs, state:{}}, function(err, result){
 				console.log(result);
 				self.id = result._id;
 			});
@@ -376,14 +376,14 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		match = this.getMatch(matchNum);
 		if(!match){
 			// Match is not running
-			db.state.findOne({_id:matchNum}, function(err, foundState){
+			db.state.findOne({_id:matchNum}, function(err, foundMatch){
 				if(err){
 					console.log("Error: When trying to find a state");
 					return;
 				}
 				// Create a new match with this state and add player
-				match = new Match(foundState._specs); // SPECS NEEDS TO BE SOMEWHERE ELSE
-				match.state = foundState;
+				match = new Match(foundMatch.specs); 
+				match.state = foundMatch.state;
 				addToMatch(match, matchNum, player);
 			})
 		} else {
