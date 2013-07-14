@@ -405,7 +405,7 @@ function gameConnectionHandler(socket, matchMaster){
 			player.matchFilters = {
 				max: matchFilters.max,
 				min: matchFilters.min,
-				persistent:matchFilters:persistent
+				persistent:matchFilters.persistent
 			};
 			matchMaster.addPlayerToQueue(player);
 		});
