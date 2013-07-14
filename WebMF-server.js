@@ -403,7 +403,8 @@ function gameConnectionHandler(socket, matchMaster){
 		socket.get('nickname', function(err, player){
 			player.matchFilters = {
 				max: matchFilters.max,
-				min: matchFilters.min
+				min: matchFilters.min,
+				persistent:matchFilters:persistent
 			};
 			matchMaster.addPlayerToQueue(player);
 		});
