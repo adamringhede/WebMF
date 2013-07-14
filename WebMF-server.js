@@ -340,19 +340,21 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.putPlayersInMatches();
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
-	var match = this.getMatch(matchNum);
-	if(match && match.players.length < match.maxSize && match.closed === false) {
-		match.addPlayer(player); 
-		var players = [];
-		for(var i = 0; i < match.players.length; i++) {
-			players.push(match.players[i].info());
+	if(typeof matchNum === 'number'){
+		var match = this.getMatch(matchNum);
+		if(match && match.players.length < match.maxSize && match.closed === false) {
+			match.addPlayer(player); 
+			var players = [];
+			for(var i = 0; i < match.players.length; i++) {
+				players.push(match.players[i].info());
+			}
+			player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
+			match.playerJoined(player);
+			player.socket.set('currentMatchNumber', matchNum);
+		} else {
+			player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
 		}
-		player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
-		match.playerJoined(player);
-		player.socket.set('currentMatchNumber', matchNum);
-	} else {
-		player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
-	}
+	} 
 };
 
 function gameConnectionHandler(socket, matchMaster){
