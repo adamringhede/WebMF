@@ -40,7 +40,6 @@ function Match(specs){
 	this.closed = false;
 	this._onChange = function(){};
 	this.reselectHost();
-//	this._onStateChange = function(){};
 }
 /* Change the state of the match. 
  * @param path = "position/playerId"
@@ -81,6 +80,10 @@ Match.prototype.onStateChange = function(path, obj){
 		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
 	}
 	this.change();
+	
+	if(this.persistant){
+		
+	}
 };
 Match.prototype.getState = function(path){
 	if(!path) return this.state;
@@ -573,11 +576,11 @@ function startServer(){
 			var matchMaster = new MatchMaster(games[i].name);
 			matchMaster.changed(function(matches, gameName){
 			//	broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
-			pushServerStates();
+				pushServerStates();
 			});
 			matchMaster.queueChanged(function(queue, gameName){
 			//	broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
-			pushServerStates()
+				pushServerStates()
 			});
 			io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
