@@ -98,7 +98,7 @@ Match.prototype.onStateChange = function(path, obj){
 	}
 	this.change();
 	
-	if(this.persistant || this.id !== ""){
+	if(this.persistant && this.id !== ""){
 		db.state.update({_id:this.id}, this.state);
 	}
 };
