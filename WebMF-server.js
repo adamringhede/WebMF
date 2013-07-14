@@ -3,6 +3,8 @@ var socketio = require('socket.io'),
 	mongo = require('mongoskin');
 var io = socketio.listen(8083),
 	db = mongo.db('localhost:27017/WebMF', {safe:true});
+	
+db.bind('state');
 
 function Player(playerName, sock){
 	this.name = playerName || "";
@@ -36,6 +38,7 @@ function Match(specs){
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
 	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
+	this.id = "";
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
@@ -81,8 +84,8 @@ Match.prototype.onStateChange = function(path, obj){
 	}
 	this.change();
 	
-	if(this.persistant){
-		
+	if(this.persistant || this.id !== ""){
+		db.state.update({'_id':this.id}, this.state);
 	}
 };
 Match.prototype.getState = function(path){
