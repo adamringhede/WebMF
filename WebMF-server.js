@@ -44,8 +44,8 @@ function Match(specs){
 	this._onChange = function(){};
 	this.reselectHost();
 	var self = this;
-	
-	if(this.persistant){
+	// THIS SPECS NEED TO BE IN THE STORED STATE SO A NEW MATCH CAN BE CREATED WITH THE RIGHT SPECS
+	if(this.persistant){ 
 		if(this.id !== ""){
 			// Grab existing match from DB
 			db.state.findOne({_id:this.id}, function(err, foundState){
@@ -348,9 +348,9 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 	this.putPlayersInMatches();
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
-	if(typeof matchNum === 'number'){
-		// Add to an existing match
-		var match = this.getMatch(matchNum);
+	var match;
+	
+	function addToMatch(match, matchNum, player){
 		if(match && match.players.length < match.maxSize && match.closed === false) {
 			match.addPlayer(player); 
 			var players = [];
@@ -361,12 +361,32 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNum);
 		} else {
-			player.socket.emit('couldNotAddToMatch', {matchNum: matchNum})
+			player.socket.emit('couldNotAddToMatch', {matchNum: matchNum});
 		}
+	}
+	
+	if(typeof matchNum === 'number'){
+		// Add to an existing match
+		match = this.getMatch(matchNum);
+		addToMatch(match, matchNum, player);
 	} else if (typeof matchNum === 'string') {
 		// Add to a persistant match
-		
+		match = this.getMatch(matchNum);
+		if(!match){
+			// Match is not running
+			db.state.findOne({_id:matchNum}, function(err, foundState){
+				if(err){
+					console.log("Error: When trying to find a state");
+					return;
+				}
+				// Create a new match with this state and add player
+				match = new Match(foundState._specs); // SPECS NEEDS TO BE SOMEWHERE ELSE
+				match.state = foundState;
+				addToMatch(match, matchNum, player);
+			})
+		}
 	}
+	
 };
 
 function gameConnectionHandler(socket, matchMaster){
