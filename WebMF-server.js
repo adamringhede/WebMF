@@ -52,7 +52,10 @@ function Match(specs){
 				self.state = foundState;
 			});
 		} else {
-			// This is a new persistant match so 
+			// This is a new persistant match so create a new document
+			db.state.insert({}, function(err, result){
+				console.log(result);
+			});
 		}
 	}
 }
@@ -88,7 +91,6 @@ Match.prototype.changeState = function(path, obj){
 	this.onStateChange(path, obj);
 };
 Match.prototype.onStateChange = function(path, obj){
-	//this._onStateChange = f;
 	for(var i = 0; i < this.players.length; i++){
 		// It might be better if this uses volatile,
 		// since it is just a notification.
@@ -339,8 +341,8 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	var match = this.getMatch(matchNum);
-	if(match.players.length < match.maxSize && match.closed === false) {
-		match.addPlayer(player); // EMIT INFORMATION ABOUT MATCH LIKE THE MATCHMAKING FUNCTION DOES
+	if(match && match.players.length < match.maxSize && match.closed === false) {
+		match.addPlayer(player); 
 		var players = [];
 		for(var i = 0; i < match.players.length; i++) {
 			players.push(match.players[i].info());
