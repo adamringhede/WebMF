@@ -55,6 +55,7 @@ function Match(specs){
 			// This is a new persistant match so create a new document
 			db.state.insert({}, function(err, result){
 				console.log(result);
+				self.id = result._id;
 			});
 		}
 	}
