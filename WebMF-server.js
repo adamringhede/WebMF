@@ -40,6 +40,7 @@ function Match(specs, id){
 	this.state = {};
 	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
 	this.id = id || "";
+	this.customSpecs = specs.customFilters || {};
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
@@ -312,7 +313,8 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
 				&& this.matches[i].persistent === filters.persistent
-				&& this.matches[i].players.length >= (filters.min || 0) ){
+				&& this.matches[i].players.length >= (filters.min || 0) 
+				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
 				// Match has correct specifications and has a open spot
 				if(handler) handler(this.matches[i], i);
 				return true;
@@ -411,7 +413,8 @@ function gameConnectionHandler(socket, matchMaster){
 			player.matchFilters = {
 				max: matchFilters.max,
 				min: matchFilters.min,
-				persistent:matchFilters.persistent
+				persistent:matchFilters.persistent,
+				customFilters: matchFilters.customFilters
 			};
 			matchMaster.addPlayerToQueue(player);
 		});
