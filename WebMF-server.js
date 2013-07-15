@@ -316,7 +316,10 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 				&& this.matches[i].players.length >= (filters.min || 0) 
 				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
 				// Match has correct specifications and has a open spot
-				if(handler) handler(this.matches[i], i);
+				if(handler) {
+					if(this.matches[i].id === "") handler(this.matches[i], i);
+					else handler(this.matches[i], this.matches[i].id);
+				}
 				return true;
 			}
 		}
