@@ -39,15 +39,15 @@ function Match(specs, id){
 	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
-	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
+	this.persistent = specs ? (specs.persistent ? specs.persistent : false) : false;
 	this.id = id || "";
-	this.customSpecs = specs.customFilters || {};
+	this.customSpecs = specs ? specs.customFilters || {} : {};
 	this.whosTurn = 0;
 	this.closed = false;
 	this._onChange = function(){};
 	this.reselectHost();
 	var self = this;
-	if(this.persistant){ 
+	if(this.persistent){ 
 		if(this.id !== ""){
 			// THIS SHOULD NOT BE NEEDED
 		/*	// Grab existing match from DB
@@ -55,7 +55,7 @@ function Match(specs, id){
 				self.state = foundMatch.state;
 			});*/
 		} else {
-			// This is a new persistant match so create a new document
+			// This is a new persistent match so create a new document
 			db.match.insert({spec: specs, state:{}}, function(err, result){
 				console.log(result);
 				self.id = result._id;
@@ -102,7 +102,7 @@ Match.prototype.onStateChange = function(path, obj){
 	}
 	this.change();
 	
-	if(this.persistant && this.id !== ""){
+	if(this.persistent && this.id !== ""){
 		db.state.update({_id:this.id}, this.state);
 	}
 };
@@ -247,7 +247,7 @@ function MatchMaster(gameName){
 MatchMaster.prototype.putPlayersInMatches = function(){ 
 	if(this.playerQueue.length !== 0){
 		var self = this;
-		this.findOpenMatch(function(match, matchNumber, persistantID){
+		this.findOpenMatch(function(match, matchNumber, persistentID){
 			// Found an open match
 			var player = self.playerQueue.shift();
 			var players = [];
@@ -257,7 +257,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			}
 			self.removePlayerFromQueue(player.socket.id);
 			self.queueChanged();
-			player.socket.emit('match found', {match:matchNumber, id:persistantID; players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
+			player.socket.emit('match found', {match:matchNumber, id:persistentID, players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
@@ -323,9 +323,9 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
-				&& this.matches[i].persistent === filters.persistent
+				&& this.matches[i].persistent === filters.persistent // SOMETHING WRONG WITH THIS
 				&& this.matches[i].players.length >= (filters.min || 0) 
-				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
+			/*	&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0*/ ){
 				// Match has correct specifications and has a open spot
 				if(handler) {
 					if(this.matches[i].id === "") handler(this.matches[i], i);
@@ -389,7 +389,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		match = this.getMatch(matchNum);
 		addToMatch(match, matchNum, player);
 	} else if (typeof matchNum === 'string') {
-		// Add to a persistant match
+		// Add to a persistent match
 		match = this.getMatch(matchNum);
 		if(!match){
 			// Match is not running
