@@ -15,7 +15,7 @@ function init(name, min, game){
 	var session = new MPSession(name, "Adams-MacBook-Pro.local", "8083", game),
 		match;
 	
-	session.onConnect(function(){
+	session.onConnect(function(){/*
 		session.startMatchmaking({
 			type: "TurnBased",
 			filters: {
@@ -59,6 +59,10 @@ function init(name, min, game){
 					match.changeTurn();
 				}, 20000);
 			}
+		});*/
+		
+		session.joinMatch('51e412b175528b5b04000001', function(){
+			console.log("JOINED MATCH");
 		});
 	});
 	session.onDisconnect(function(){

@@ -3,7 +3,11 @@ var socketio = require('socket.io'),
 	mongo = require('mongoskin'),
 	_ = require('lodash');
 var io = socketio.listen(8083),
-	db = mongo.db('localhost:27017/WebMF', {safe:true});
+	db = mongo.db('localhost:27017/WebMF', {safe:true}),
+	BSON = mongo.BSONPure;
+function objectId(theidID){
+	return new BSON.ObjectID(theidID);
+}
 	
 db.bind('match');
 
@@ -103,7 +107,7 @@ Match.prototype.onStateChange = function(path, obj){
 	this.change();
 	
 	if(this.persistent && this.id !== ""){
-		db.match.update({_id:this.id}, this.state, function(err, handler){
+		db.match.update({_id:objectId(this.id)}, this.state, function(err, handler){
 			if(err){
 				console.log("Error when trying to update match state in database");
 			}
@@ -397,7 +401,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		match = this.getMatch(matchNum);
 		if(!match){
 			// Match is not running
-			db.match.findOne({_id:matchNum}, function(err, foundMatch){
+			db.match.findOne({_id:objectId(matchNum)}, function(err, foundMatch){
 				if(err){
 					console.log("Error: When trying to find a match");
 					return;
