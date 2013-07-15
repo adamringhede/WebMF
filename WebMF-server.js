@@ -388,6 +388,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 					addToMatch(match, matchNum, player);
 				} else {
 					// Did not find a match, should emit error
+					player.socket.emit('couldNotAddToMatch', {matchNum: matchNum});
 				}
 			})
 		} else {
