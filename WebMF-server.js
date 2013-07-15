@@ -1,6 +1,7 @@
 var socketio = require('socket.io'),
 	fs = require('fs'),
-	mongo = require('mongoskin');
+	mongo = require('mongoskin'),
+	_ = require('lodash');
 var io = socketio.listen(8083),
 	db = mongo.db('localhost:27017/WebMF', {safe:true});
 	
@@ -44,7 +45,6 @@ function Match(specs, id){
 	this._onChange = function(){};
 	this.reselectHost();
 	var self = this;
-	// THIS SPECS NEED TO BE IN THE STORED STATE SO A NEW MATCH CAN BE CREATED WITH THE RIGHT SPECS
 	if(this.persistant){ 
 		if(this.id !== ""){
 			// THIS SHOULD NOT BE NEEDED
