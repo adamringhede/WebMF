@@ -37,11 +37,11 @@ function init(name, min, game){
 					console.log(p);
 				});
 				match.bind("move", function(data){
-				//	console.log(data);
+					console.log(data);
 				});
 				match.updateState("position/adam/coords",{x:2,y:5});
 				// Some methods have to wait for others to have have finished first
-				// for the expected effect. Having callback everywhere is not fun. 
+				// so that the binding have time to take effect.
 				setTimeout(function(){
 					// Issue: if the bind has not yet taken effect, the triggering will not work
 					match.trigger("move", "move was triggered");

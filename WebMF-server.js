@@ -18,7 +18,7 @@ function Player(playerName, sock){
 	};
 }
 /* Sends a message to the player with some data from the server. 
- * (this is not ever used on the front end at this time)
+ * (this is not ever used on the front end at this time)4
  */
 Player.prototype.send = function(data){
 	this.socket.emit('message', data);
@@ -36,6 +36,7 @@ Player.prototype.info = function(){
 function Match(specs, id){
 	this.players = [];
 	this.host = null;
+	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
 	this.state = {};
 	this.persistant = specs ? (specs.persistant ? specs.persistant : false) : false;
@@ -144,6 +145,11 @@ Match.prototype.addPlayer = function(player){
 	if(this.players.length === 1){
 		this.host = player;
 	}
+	if (this.players.length === this.minSize){
+		for(var i = 0, l = this.players.length; i < l; i++){
+			this.players[i].emit('minReached');
+		}
+	}
 };
 /* Remove a player with said id
  */
@@ -160,6 +166,11 @@ Match.prototype.removePlayer = function(playerId){
 			
 			if(this.host.socket.id === playerId){
 				this.reselectHost();
+			}
+			if (this.players.length < this.minSize){
+				for(var i = 0, l = this.players.length; i < l; i++){
+					this.players[i].emit('lessThanMin');
+				}
 			}
 			return true;
 		}
