@@ -47,10 +47,11 @@ function Match(specs, id){
 	// THIS SPECS NEED TO BE IN THE STORED STATE SO A NEW MATCH CAN BE CREATED WITH THE RIGHT SPECS
 	if(this.persistant){ 
 		if(this.id !== ""){
-			// Grab existing match from DB
+			// THIS SHOULD NOT BE NEEDED
+		/*	// Grab existing match from DB
 			db.match.findOne({_id:this.id}, function(err, foundMatch){
 				self.state = foundMatch.state;
-			});
+			});*/
 		} else {
 			// This is a new persistant match so create a new document
 			db.match.insert({spec: specs, state:{}}, function(err, result){
@@ -383,7 +384,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 				}
 				// Create a new match with this state and add player
 				if(foundMatch){
-					match = new Match(foundMatch.specs); 
+					match = new Match(foundMatch.specs, matchNum); 
 					match.state = foundMatch.state;
 					addToMatch(match, matchNum, player);
 				} else {
