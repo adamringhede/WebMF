@@ -94,6 +94,12 @@ MPMatch.prototype.onGotKicked = function(f){
 	this.socket.on('gotKicked', f);
 	this._notPartOfApi_onLeaveMatch();
 };
+MPMatch.prototype.onLessThanMinimumPlayers = function(f){
+	this.socket.on('lessThanMin', f);
+};
+MPMatch.prototype.onReachedMinimumPlayers = function(f){
+	this.socket.on('minReached', f);
+};
 /* Send data to another player. 
  */
 MPMatch.prototype.send = function(reciever, data, unreliable){
@@ -313,6 +319,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 };
 MPSession.prototype.joinMatch = function(matchNum, onJoin){
 	var self = this;
+	console.log(matchNum);
 	this.socket.emit('joinMatch', {matchNum:matchNum});
 	this.socket.on('joinedMatch', function(data){
 		var nm = new MPMatch(self.socket, data.match, data.players);
