@@ -28,7 +28,7 @@ function init(name, min, game){
 			},
 			waitForOtherPlayers: true,
 			onMatchFound: function(newmatch){
-				console.log("Match found");
+				console.log("Match found with id: " + newmatch.match);
 				match = newmatch;
 				match.onPlayerJoined(function(p){
 					console.log(p);

@@ -103,7 +103,11 @@ Match.prototype.onStateChange = function(path, obj){
 	this.change();
 	
 	if(this.persistent && this.id !== ""){
-		db.state.update({_id:this.id}, this.state);
+		db.match.update({_id:this.id}, this.state, function(err, handler){
+			if(err){
+				console.log("Error when trying to update match state in database");
+			}
+		});
 	}
 };
 Match.prototype.getState = function(path){
@@ -325,7 +329,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 				&& this.matches[i].maxSize === filters.max
 				&& this.matches[i].persistent === filters.persistent // SOMETHING WRONG WITH THIS
 				&& this.matches[i].players.length >= (filters.min || 0) 
-			/*	&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0*/ ){
+				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
 				// Match has correct specifications and has a open spot
 				if(handler) {
 					if(this.matches[i].id === "") handler(this.matches[i], i);
@@ -393,9 +397,9 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 		match = this.getMatch(matchNum);
 		if(!match){
 			// Match is not running
-			db.state.findOne({_id:matchNum}, function(err, foundMatch){
+			db.match.findOne({_id:matchNum}, function(err, foundMatch){
 				if(err){
-					console.log("Error: When trying to find a state");
+					console.log("Error: When trying to find a match");
 					return;
 				}
 				// Create a new match with this state and add player
