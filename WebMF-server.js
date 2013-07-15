@@ -236,7 +236,7 @@ function MatchMaster(gameName){
 MatchMaster.prototype.putPlayersInMatches = function(){ 
 	if(this.playerQueue.length !== 0){
 		var self = this;
-		this.findOpenMatch(function(match, matchNumber){
+		this.findOpenMatch(function(match, matchNumber, persistantID){
 			// Found an open match
 			var player = self.playerQueue.shift();
 			var players = [];
@@ -246,7 +246,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			}
 			self.removePlayerFromQueue(player.socket.id);
 			self.queueChanged();
-			player.socket.emit('match found', {match:matchNumber, players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
+			player.socket.emit('match found', {match:matchNumber, id:persistantID; players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
@@ -318,7 +318,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 				// Match has correct specifications and has a open spot
 				if(handler) {
 					if(this.matches[i].id === "") handler(this.matches[i], i);
-					else handler(this.matches[i], this.matches[i].id);
+					else handler(this.matches[i], i, this.matches[i].id);
 				}
 				return true;
 			}
