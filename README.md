@@ -31,6 +31,8 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Device independant. Create multiplayer games that can run on smartphones, tablets and desktop devices. 
 	– Write to a centralized matchstate that will update the state at every other client. 
 		- The other clients can be notified about the change.
+		- Choose to use a persistant matchstate that will be retained, so that you can continue
+		  playing from where you left of. 
 	– Choose a host for client-server architectures on top of the platform. 
 		- Send data to the host
 	– Send faster but unreliable messages
