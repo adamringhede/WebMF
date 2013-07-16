@@ -15,13 +15,13 @@ function init(name, min, game){
 	var session = new MPSession(name, "Adams-MacBook-Pro.local", "8083", game),
 		match;
 	
-	session.onConnect(function(){/*
+	session.onConnect(function(){
 		session.startMatchmaking({
 			type: "TurnBased",
 			filters: {
 				min: min || 0,
-				max: 4,
-				persistent: true
+				max: 4//,
+			//	persistent: true
 			},
 			onQueue: function(){
 				console.log("Put in queue");
@@ -59,8 +59,8 @@ function init(name, min, game){
 					match.changeTurn();
 				}, 20000);
 			}
-		});*/
-		
+		});
+		/*
 		session.joinMatch('51e4116b038f6f5704000001', function(match){
 			console.log("JOINED MATCH");
 			console.log("State:");
@@ -70,7 +70,7 @@ function init(name, min, game){
 				console.log("Trying to update state");
 				match.updateState("arg", 4);
 			}, 2000);
-		});
+		});*/
 	});
 	session.onDisconnect(function(){
 		console.log("oh no I lost my connection");

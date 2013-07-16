@@ -352,7 +352,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
-				&& this.matches[i].persistent === filters.persistent // SOMETHING WRONG WITH THIS
+				&& this.matches[i].persistent === (filters.persistent || false) 
 				&& this.matches[i].players.length >= (filters.min || 0) 
 				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
 				// Match has correct specifications and has a open spot
