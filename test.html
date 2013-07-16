@@ -53,7 +53,7 @@ function init(name, min, game){
 					console.log("Changed turn to: " + player.name);
 				});
 				setInterval(function(){
-					console.log("Num players in match: " + match.players.size());
+					console.log("Num players in match: " + match.players.count());
 				}, 2000)
 				setInterval(function(){
 					match.changeTurn();

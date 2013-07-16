@@ -304,12 +304,12 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		};
 		
 		if(parameters.waitForOtherPlayers === true){
-			if(nm.players.size() >= waitForMin){
+			if(nm.players.count() >= waitForMin){
 				self._onMatchFound(nm);
 				return;
 			}
 			nm.onPlayerJoined(function(){ 
-				if(nm.players.size() >= waitForMin){
+				if(nm.players.count() >= waitForMin){
 					self._onMatchFound(nm);
 					nm.onPlayerJoined(function(){});
 				}
@@ -372,7 +372,7 @@ MPPlayerCollection.prototype.get = function(playerId){
 	// Was not able to remove player
 	return false;
 };
-MPPlayerCollection.prototype.size = function(){
+MPPlayerCollection.prototype.count = function(){
 	return this.players.length;
 };
 MPPlayerCollection.prototype.iterate = function(f){
