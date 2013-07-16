@@ -39,7 +39,7 @@ Player.prototype.info = function(){
  */
 function Match(specs, id){
 	this.players = [];
-	this.type = "";
+	this.type = specs ? (specs.type ? specs.type : false) : false;
 	this.host = null;
 	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
@@ -62,6 +62,7 @@ function Match(specs, id){
 				self.customSpecs = foundMatch.spec.customFilters;
 				self.maxSize = foundMatch.spec.max;
 				self.minSize = foundMatch.spec.min;
+				self.type = foundMatch.spec.type;
 			});
 		} else {
 			// This is a new persistent match so create a new document
@@ -404,7 +405,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 			for(var i = 0; i < match.players.length; i++) {
 				players.push(match.players[i].info());
 			}
-			player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
+			player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn, type:match.type});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNum);
 		} else {

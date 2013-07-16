@@ -279,6 +279,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 	if(parameters.waitForOtherPlayers) {
 		parameters.filters.min = 0;
 	}
+	parameters.filters.type = parameters.type;
 	this._putOnMatchmakingQueue = parameters.onQueue;
 	this._onMatchFound = parameters.onMatchFound;
 	this.socket.emit('matchmake', parameters.filters);
@@ -322,7 +323,12 @@ MPSession.prototype.joinMatch = function(matchNum, onJoin){
 	console.log(matchNum);
 	this.socket.emit('joinMatch', {matchNum:matchNum});
 	this.socket.on('joinedMatch', function(data){
-		var nm = new MPMatch(self.socket, data.match, data.players);
+		var nm;
+		if(data.type === "TurnBased"){
+			nm = new MPTurnBasedMatch(self.socket, data.match, data.players);
+		} else {
+			nm = new MPMatch(self.socket, data.match, data.players);
+		}
 		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
