@@ -39,6 +39,7 @@ Player.prototype.info = function(){
  */
 function Match(specs, id){
 	this.players = [];
+	this.type = "";
 	this.host = null;
 	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
@@ -53,14 +54,23 @@ function Match(specs, id){
 	var self = this;
 	if(this.persistent){ 
 		if(this.id !== ""){
-			// THIS SHOULD NOT BE NEEDED
-		/*	// Grab existing match from DB
-			db.match.findOne({_id:this.id}, function(err, foundMatch){
-				self.state = foundMatch.state;
-			});*/
+			// Grab existing match from DB
+			db.match.findOne({_id:objectId(this.id)}, function(err, foundMatch){
+				console.log("FOUND MATCH");
+				self.whosTurn = foundMatch.whosTurn;
+				self.persistent = foundMatch.spec.persistent;
+				self.customSpecs = foundMatch.spec.customFilters;
+				self.maxSize = foundMatch.spec.max;
+				self.minSize = foundMatch.spec.min;
+			});
 		} else {
 			// This is a new persistent match so create a new document
-			db.match.insert({spec: specs, state:{}}, function(err, result){
+			db.match.insert({
+					spec: specs,
+					state:{}, 
+					whosTurn:self.whosTurn,
+					created: new Date()
+				}, function(err, result){
 				console.log(result);
 				self.id = result._id;
 			});
@@ -105,9 +115,9 @@ Match.prototype.onStateChange = function(path, obj){
 		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
 	}
 	this.change();
-	
+	console.log("\n\n\n\n " + this.persistent + "\n\n\n\n ")
 	if(this.persistent && this.id !== ""){
-		db.match.update({_id:objectId(this.id)}, this.state, function(err, handler){
+		db.match.update({_id:objectId(this.id)}, {$set: {'state': this.state}}, function(err, handler){
 			if(err){
 				console.log("Error when trying to update match state in database");
 			}
@@ -159,6 +169,15 @@ Match.prototype.addPlayer = function(player){
 		}
 	}
 };
+Match.prototype.turnChanged = function(){
+	if(this.persistent && this.id !== ""){
+		db.match.update({_id:objectId(this.id)}, {$set: {'whosTurn': this.whosTurn}}, function(err, handler){
+			if(err){
+				console.log("Error when trying to update match whosTurn in database");
+			}
+		});
+	}
+}
 /* Remove a player with said id
  */
 Match.prototype.removePlayer = function(playerId){
@@ -271,14 +290,15 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
 	}
 };
-MatchMaster.prototype.addMatch = function(specifications){
-	var nm = new Match(specifications),
+MatchMaster.prototype.addMatch = function(specifications, id){
+	var nm = new Match(specifications, id),
 		self = this;
 	this.matches.push(nm);
 	nm.change(function(){
 		self.changed();
 	});
 	this.changed();
+	return nm;
 };
 MatchMaster.prototype.getMatch = function(matchNumber){
 	if(typeof matchNumber === 'number'){
@@ -391,7 +411,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 			player.socket.emit('couldNotAddToMatch', {matchNum: matchNum});
 		}
 	}
-	
+	var self = this;
 	if(typeof matchNum === 'number'){
 		// Add to an existing match
 		match = this.getMatch(matchNum);
@@ -408,8 +428,9 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 				}
 				// Create a new match with this state and add player
 				if(foundMatch){
-					match = new Match(foundMatch.specs, matchNum); 
+					match = self.addMatch(foundMatch.specs, matchNum); 
 					match.state = foundMatch.state;
+					match.persistent = true;
 					addToMatch(match, matchNum, player);
 				} else {
 					// Did not find a match, should emit error
@@ -560,6 +581,7 @@ function gameConnectionHandler(socket, matchMaster){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
 			match.whosTurn += 1;
+			match.turnChanged();
 			if(match.whosTurn === match.players.length){
 				match.whosTurn = 0;
 			}
