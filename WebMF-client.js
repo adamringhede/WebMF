@@ -1,4 +1,3 @@
-
 function MPMatch(socket, matchnumber, players){
 	this.socket = socket;
 	this.timeStarted = (new Date()).getTime();
@@ -168,10 +167,11 @@ MPMatch.prototype.getState = function(path, f){
 };
 /* Updates the local state with the centralized state.
  */
-MPMatch.prototype.renewState = function(){
+MPMatch.prototype.renewState = function(callback){
 	var self = this;
 	this.getState(function(state){
 		self.state = state;
+		if(callback) callback(state);
 	});
 };
 MPMatch.prototype.close = function(){
