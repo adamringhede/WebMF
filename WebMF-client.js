@@ -13,6 +13,7 @@ function MPMatch(socket, matchnumber, players){
 	this._onStateChange = function(){};
 	this._onRecieveMessage = function(){};
 	this._notPartOfApi_onLeaveMatch = function(){};
+	this._matchStateEventHandlers = {};
 	var self = this;
 	this.socket.on('playerDisconnected', function(data){
 		//console.log(data.message); 
