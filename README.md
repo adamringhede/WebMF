@@ -74,8 +74,9 @@ If you want to help out with documentation, tutorials, testing, implementation, 
 ### Dependencies
 	– Node.js
 	– socket.io
-	- MongoDB
-	- Mongoskin
+	– MongoDB
+	– Mongoskin
+	– Lo-Dash
 
 ## Get started
 
