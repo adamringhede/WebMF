@@ -103,7 +103,7 @@ MPMatch.prototype.onReachedMinimumPlayers = function(f){
  */
 MPMatch.prototype.send = function(reciever, data, unreliable){
 	if(!reciever instanceof MPPlayer) throw "Invalid reciever object";
-	t((unreliabe || false) ? this.socket.volatile : this.socket).emit('send', {
+	((unreliabe || false) ? this.socket.volatile : this.socket).emit('send', {
 		match: matchNumber,
 		message: data,
 		reciever: reciever.playerId,
