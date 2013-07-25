@@ -64,10 +64,10 @@ function MPMatch(socket, matchnumber, players){
 		}
 		
 		// Call eventhandler that are bound to a specified path
-		for(var p in handlers){
+		for(var p in self._matchStateEventHandlers){
 		    if(p.indexOf(path) === 0) {
-		        for(var i in handlers[p]){
-		            handlers[p][i]();
+		        for(var i in self._matchStateEventHandlers[p]){
+		            self._matchStateEventHandlers[p][i](obj);
 		        }
 		    }
 		}
@@ -162,8 +162,12 @@ MPMatch.prototype.trigger = function(type, data, unreliable){
 MPMatch.prototype.updateState = function(path, obj){
 	this.socket.emit('updateState', {path:path, obj:obj});
 };
-MPMatch.prototype.onStateChanged = function(f){
-	self._onStateChange = f;
+MPMatch.prototype.onStateChanged = function(arg1, arg2){
+	if((typeof arg1 == 'string' || arg1 instanceof String) && typeof arg2 == 'function') {
+		this._matchStateEventHandlers[arg1].push(arg2);
+	} else if (typeof arg1 == 'function') {
+		self._onStateChange = arg1;
+	}
 };
 /* Get the centralized state. You may use a path to only get a part of the state.
  * If the full path cannot be found, it will return the last possible object in the path. 
