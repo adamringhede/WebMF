@@ -62,6 +62,15 @@ function MPMatch(socket, matchnumber, players){
 
 			}
 		}
+		
+		// Call eventhandler that are bound to a specified path
+		for(var p in handlers){
+		    if(p.indexOf(path) === 0) {
+		        for(var i in handlers[p]){
+		            handlers[p][i]();
+		        }
+		    }
+		}
 		self._onStateChange(data.path, data.obj);
 	});
 }
