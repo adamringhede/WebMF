@@ -180,6 +180,7 @@ MPMatch.prototype.getState = function(path, f){
 	});
 };
 /* Updates the local state with the centralized state.
+ * THIS SHOULD NOT BE PART OF THE ORIGIAN
  */
 MPMatch.prototype.renewState = function(callback){
 	var self = this;
@@ -230,13 +231,6 @@ function MPSession(name, hostname, port, gameName){
 	this._onConnect = function(){};
 	this._onDisconnect = function(){};
 	this.timeStarted = (new Date()).getTime();
-	try{
-		this.socket = io.connect(hostname+':'+port+'/'+gameName, {
-			reconnect:false
-		});
-	} catch (e) {
-		return e;
-	}
 	
 	var self = this;
 	this.socket.on('connect', function (data) {
@@ -261,6 +255,13 @@ function MPSession(name, hostname, port, gameName){
  */
 MPSession.prototype.onConnect = function(f){
 	this._onConnect = f;
+	try{
+		this.socket = io.connect(hostname+':'+port+'/'+gameName, {
+			reconnect:false
+		});
+	} catch (e) {
+		return e;
+	}
 };
 /* Set an eventhandler for when a connection is lost.
  */
