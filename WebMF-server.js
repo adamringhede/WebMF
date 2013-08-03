@@ -465,6 +465,8 @@ function gameConnectionHandler(socket, matchMaster){
 		socket.get('nickname', function(err, player){
 			var match;
 			var players;
+			// Incase the player is in the queue, remove the player.
+			matchMaster.removePlayerFromQueue(player.socket.id);
 			if(!player.inmatch) return;
 			
 			// If the player is in a match
@@ -517,8 +519,6 @@ function gameConnectionHandler(socket, matchMaster){
 		}
 	});
 	socket.on('disconnectMe', function(id){
-		// Incase the player is in the queue, remove the player.
-		matchMaster.removePlayerFromQueue(playerId);
 		socket.disconnect();
 	});
 	socket.on('customEvent', function(type){
