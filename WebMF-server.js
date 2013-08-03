@@ -111,8 +111,6 @@ Match.prototype.changeState = function(path, obj){
 };
 Match.prototype.onStateChange = function(path, obj){
 	for(var i = 0; i < this.players.length; i++){
-		// It might be better if this uses volatile,
-		// since it is just a notification.
 		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
 	}
 	this.change();
@@ -519,6 +517,8 @@ function gameConnectionHandler(socket, matchMaster){
 		}
 	});
 	socket.on('disconnectMe', function(id){
+		// Incase the player is in the queue, remove the player.
+		matchMaster.removePlayerFromQueue(playerId);
 		socket.disconnect();
 	});
 	socket.on('customEvent', function(type){
