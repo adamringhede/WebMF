@@ -280,7 +280,7 @@ MPSession.prototype.leaveQueue = function(f){
 /* Quit the session.
  */
 MPSession.prototype.disconnect = function(){
-	this.socket.emit('disconnectMe', playerId);
+	this.socket.emit('disconnectMe', this.localPlayerId);
 };
 /* Return the number of milliseconds since the session started.
  */
