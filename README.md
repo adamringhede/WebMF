@@ -39,6 +39,9 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Kick a player from the match.
 	– Host several multiplayer games on the same node service. 
 	– (Unstable) Monitor the activity of the server and all running games with a GUI.
+	– Invite other players to a match
+		– Players who recieve an invitation has to option to accept or decling
+		– When accepting an invitation, the player will automatically leave the current match
 	– Join a specified ongoing open match without the use of matchmaking
 		- (Planned #1) If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
