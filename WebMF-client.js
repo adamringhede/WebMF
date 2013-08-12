@@ -223,6 +223,11 @@ MPTurnBasedMatch.prototype.changeTurn = function(){
 };
 
 function MPSession(name, hostname, port, gameName){
+	this.connectionInfo = {
+		hostname:hostname,
+		port:port,
+		gameName:gameName
+	};
 	this.localPlayerId = "";
 	this.localPlayerName = name || "";
 	this.matchInProgress = false;
@@ -237,7 +242,7 @@ function MPSession(name, hostname, port, gameName){
 MPSession.prototype.onConnect = function(f){
 	this._onConnect = f;
 	try{
-		this.socket = io.connect(hostname+':'+port+'/'+gameName, {
+		this.socket = io.connect(this.connectionInfo.hostname+':'+this.connectionInfo.port+'/'+this.connectionInfo.gameName, {
 			reconnect:false
 		});
 		var self = this;
