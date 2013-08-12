@@ -376,11 +376,7 @@ MPPlayerCollection.prototype.fill = function(players){
 };
 MPPlayerCollection.prototype.remove = function(player){
 	for(var i = 0; i < this.players.length; i++){
-		if(this.players[i] === null){
-			this.players.splice(i,1);
-			continue;
-		}
-		if(this.players[i].socket.id === playerId){
+		if(this.players[i].playerId === player.playerId){
 			this.players.splice(i,1);
 			return true;
 		}
