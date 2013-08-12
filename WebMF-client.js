@@ -252,7 +252,7 @@ MPSession.prototype.onConnect = function(f){
 			self._onConnect();
 		});
 		this.socket.on('disconnect', function (data) {
-			console.log("Connecton lost");
+			console.log("Connection lost");
 			self._onDisconnect();
 		});
 		this.socket.on('matchmaking queue', function (data) {
