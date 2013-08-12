@@ -472,6 +472,7 @@ function gameConnectionHandler(socket, matchMaster){
 			
 			// If the player is in a match
 			socket.get('currentMatchNumber', function(err, num){
+				if(num === -1) return;
 				match = matchMaster.getMatch(num);
 				players = match.players;
 				match.removePlayer(player.socket.id);
