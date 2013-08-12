@@ -184,9 +184,10 @@ Match.prototype.removePlayer = function(playerId){
 	for(var i = 0; i < this.players.length; i++){
 		if(this.players[i] === null){
 			this.players.splice(i,1);
-			continue;
+		//	continue; // Should probably not do this because of risk of skipping the next one
 		}
 		if(this.players[i].socket.id === playerId){
+			this.players[i].inmatch = false;
 			this.players.splice(i,1);
 			this.change();
 			
