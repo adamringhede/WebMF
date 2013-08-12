@@ -231,25 +231,6 @@ function MPSession(name, hostname, port, gameName){
 	this._onConnect = function(){};
 	this._onDisconnect = function(){};
 	this.timeStarted = (new Date()).getTime();
-	
-	var self = this;
-	this.socket.on('connect', function (data) {
-		console.log("Connecton established");
-		self.socket.emit('set nickname', self.localPlayerName);
-		self._onConnect();
-	});
-	this.socket.on('disconnect', function (data) {
-		console.log("Connecton lost");
-		self._onDisconnect();
-	});
-	this.socket.on('matchmaking queue', function (data) {
-		console.log("Looking for a match");
-		self._putOnMatchmakingQueue();
-	});
-	this.socket.on('name set', function (id) {
-		console.log("PlayerId is now " + id);
-		self.localPlayerId = id;
-	});
 }
 /* Set an eventhandler for when a connection has been made.
  */
@@ -258,6 +239,24 @@ MPSession.prototype.onConnect = function(f){
 	try{
 		this.socket = io.connect(hostname+':'+port+'/'+gameName, {
 			reconnect:false
+		});
+		var self = this;
+		this.socket.on('connect', function (data) {
+			console.log("Connecton established");
+			self.socket.emit('set nickname', self.localPlayerName);
+			self._onConnect();
+		});
+		this.socket.on('disconnect', function (data) {
+			console.log("Connecton lost");
+			self._onDisconnect();
+		});
+		this.socket.on('matchmaking queue', function (data) {
+			console.log("Looking for a match");
+			self._putOnMatchmakingQueue();
+		});
+		this.socket.on('name set', function (id) {
+			console.log("PlayerId is now " + id);
+			self.localPlayerId = id;
 		});
 	} catch (e) {
 		return e;
