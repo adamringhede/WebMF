@@ -167,6 +167,10 @@ Match.prototype.addPlayer = function(player){
 			this.players[i].emit('minReached');
 		}
 	}
+	if(this.whosTurn === "") {
+		// It is a new match so a player to start needs to be selected.
+		this.whosTurn = this.player.socket.id;
+	}
 };
 Match.prototype.turnChanged = function(){
 	if(this.persistent && this.id !== ""){
