@@ -47,7 +47,7 @@ function Match(specs, id){
 	this.persistent = specs ? (specs.persistent ? specs.persistent : false) : false;
 	this.id = id || "";
 	this.customSpecs = specs ? specs.customFilters || {} : {};
-	this.whosTurn = 0;
+	this.whosTurn = ""; // SHOULD BE A PLAYER ID
 	this.closed = false;
 	this._onChange = function(){};
 	this.reselectHost();
@@ -583,12 +583,21 @@ function gameConnectionHandler(socket, matchMaster){
 	socket.on('changeTurn', function(){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
-			match.whosTurn += 1;
 			match.turnChanged();
-			if(match.whosTurn === match.players.length){
-				match.whosTurn = 0;
+			var current;
+			for(current = 0; i < match.players.length; i++){
+				if(match.players[current].socket.id === match.whosTurn){
+					break;
+				}
 			}
-			var player = match.players[match.whosTurn].info();
+			match.whosTurn = match.players[(current+1) % match.players.length].socket.id;
+			
+			var player;
+			for(var i = 0; i < match.players.length; i++){
+				if(match.players[i].socket.id === match.whosTurn){
+					player = match.players[i].info();
+				}
+			}
 			for(var i = 0; i < match.players.length; i++){
 				match.players[i].socket.emit('turnChanged', player);
 			}

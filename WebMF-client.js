@@ -164,6 +164,7 @@ MPMatch.prototype.updateState = function(path, obj){
 };
 MPMatch.prototype.onStateChanged = function(arg1, arg2){
 	if((typeof arg1 == 'string' || arg1 instanceof String) && typeof arg2 == 'function') {
+		if(!this._matchStateEventHandlers[arg1]) this._matchStateEventHandlers[arg1] = [];
 		this._matchStateEventHandlers[arg1].push(arg2);
 	} else if (typeof arg1 == 'function') {
 		self._onStateChange = arg1;
@@ -208,7 +209,7 @@ MPTurnBasedMatch.prototype = Object.create(MPMatch.prototype);
 MPTurnBasedMatch.prototype.constructor = MPTurnBasedMatch;
 
 MPTurnBasedMatch.prototype.currentPlayer = null;
-MPTurnBasedMatch.prototype.whosTurn = function(){
+MPTurnBasedMatch.prototype.getWhosTurn = function(){
 	return this.currentPlayer;
 };
 MPTurnBasedMatch.prototype.onTurnChanged = function(turnChanged){
