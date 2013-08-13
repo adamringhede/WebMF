@@ -210,13 +210,16 @@ MPTurnBasedMatch.prototype.constructor = MPTurnBasedMatch;
 
 MPTurnBasedMatch.prototype.currentPlayer = null;
 MPTurnBasedMatch.prototype.getWhosTurn = function(){
+	if(this.currentPlayer === null){
+		this.currentPlayer = this.players.get(this.whosTurn);
+	}
 	return this.currentPlayer;
 };
 MPTurnBasedMatch.prototype.onTurnChanged = function(turnChanged){
 	var self = this;
-	this.socket.on('turnChanged', function(player){
-		turnChanged(player);
-		self.currentPlayer = self.players.get(player.playerId);
+	this.socket.on('turnChanged', function(playerId){
+		turnChanged(playerId);
+		self.currentPlayer = self.players.get(playerId);
 	});
 };
 MPTurnBasedMatch.prototype.changeTurn = function(){

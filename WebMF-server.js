@@ -169,7 +169,10 @@ Match.prototype.addPlayer = function(player){
 	}
 	if(this.whosTurn === "") {
 		// It is a new match so a player to start needs to be selected.
-		this.whosTurn = this.player.socket.id;
+		this.whosTurn = player.socket.id;
+		for(var i = 0; i < this.players.length; i++){
+			this.players[i].socket.emit('turnChanged', this.whosTurn);
+		}
 	}
 };
 Match.prototype.turnChanged = function(){
@@ -589,21 +592,21 @@ function gameConnectionHandler(socket, matchMaster){
 			var match = matchMaster.getMatch(num);
 			match.turnChanged();
 			var current;
-			for(current = 0; i < match.players.length; i++){
+			for(current = 0; current < match.players.length; current++){
 				if(match.players[current].socket.id === match.whosTurn){
 					break;
 				}
 			}
 			match.whosTurn = match.players[(current+1) % match.players.length].socket.id;
 			
-			var player;
+			var playerId = "To be selected";
 			for(var i = 0; i < match.players.length; i++){
 				if(match.players[i].socket.id === match.whosTurn){
-					player = match.players[i].info();
+					playerId = match.players[i].socket.id;
 				}
 			}
 			for(var i = 0; i < match.players.length; i++){
-				match.players[i].socket.emit('turnChanged', player);
+				match.players[i].socket.emit('turnChanged', playerId);
 			}
 		});
 	});
