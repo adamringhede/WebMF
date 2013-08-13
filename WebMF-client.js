@@ -385,12 +385,15 @@ MPPlayerCollection.prototype.remove = function(player){
 	return false;
 };
 MPPlayerCollection.prototype.get = function(playerId){
+	if(typeof playerId === 'number'){
+		return this.players[playerId];
+	}
 	for(var i = 0; i < this.players.length; i++){
 		if(this.players[i].playerId === playerId){
 			return this.players[i];
 		}
 	}
-	// Was not able to remove player
+	// Was not able to find player
 	return false;
 };
 MPPlayerCollection.prototype.count = function(){
