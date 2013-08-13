@@ -378,9 +378,9 @@ MPPlayerCollection.prototype.fill = function(players){
 		this.add(new MPPlayer(players[i]));
 	}
 };
-MPPlayerCollection.prototype.remove = function(player){
+MPPlayerCollection.prototype.remove = function(playerId){
 	for(var i = 0; i < this.players.length; i++){
-		if(this.players[i].playerId === player.playerId){
+		if(this.players[i].playerId === playerId){
 			this.players.splice(i,1);
 			return true;
 		}
