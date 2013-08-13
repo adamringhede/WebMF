@@ -215,7 +215,7 @@ MPTurnBasedMatch.prototype.onTurnChanged = function(turnChanged){
 	var self = this;
 	this.socket.on('turnChanged', function(player){
 		turnChanged(player);
-		self.currentPlayer = self.players.get(player.playerId) // FIND PLAYER IN COLLECTION WITH NEW METHOD
+		self.currentPlayer = self.players.get(player.playerId);
 	});
 };
 MPTurnBasedMatch.prototype.changeTurn = function(){
