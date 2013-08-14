@@ -1,3 +1,14 @@
+/*
+
+Copyright 2013 Adam David Ringhede
+
+   You may not modify and/or redistribute this software
+   under another name. You will neither take credit for 
+   the algorithms and code used to make WebMF. 
+
+*/
+
+
 var socketio = require('socket.io'),
 	fs = require('fs'),
 	mongo = require('mongoskin'),
