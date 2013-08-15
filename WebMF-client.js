@@ -243,14 +243,26 @@ function MPSession(name, hostname, port, gameName){
 }
 /* Set an eventhandler for when a connection has been made.
  */
-MPSession.prototype.onConnect = function(f){
+MPSession.prototype.onConnect = function(f, error){
 	this._onConnect = f;
 	try{
+		// Connect to the server
 		this.socket = io.connect(this.connectionInfo.hostname+':'+this.connectionInfo.port+'/'+this.connectionInfo.gameName, {
 			reconnect:false
 		});
 		var self = this;
+		
+		// Handle the event of server being offline
+		var timeout = setTimeout(function(){
+			if(self.socket.socket.connected !== true){
+				if(error) error("Can not connect to the server"); 
+				return false;
+			}
+		}, 3000);
+		
+		// Set eventlisteners on the socket
 		this.socket.on('connect', function (data) {
+			window.clearTimeout(timeout);
 			console.log("Connecton established");
 			self.socket.emit('set nickname', self.localPlayerName);
 			self._onConnect();
@@ -270,6 +282,7 @@ MPSession.prototype.onConnect = function(f){
 	} catch (e) {
 		return e;
 	}
+	return true;
 };
 /* Set an eventhandler for when a connection is lost.
  */
