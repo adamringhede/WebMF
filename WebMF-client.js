@@ -378,6 +378,14 @@ function MPPlayer(data){
 	this.playerId = data.id || "";
 	this.name = data.name || "";
 }
+MPPlayer.prototype.extend = function(objects, force){
+	for(var obj in objects){
+		if(!this[obj] || force)
+			this[obj] = objects[obj];
+		else 
+			throw "Tried to overwrite an existing property [" +obj+ "]";
+	}
+};
 
 function MPPlayerCollection(){
 	this.players = [];
