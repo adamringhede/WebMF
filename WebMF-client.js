@@ -1,3 +1,12 @@
+var WebMF = {
+	debug: true,
+	clog: function(message) {
+		if (this.debug) {
+			console.log("WebMF:   " + message);
+		}
+	}
+};
+
 function MPMatch(socket, matchnumber, players){
 	this.socket = socket;
 	this.timeStarted = (new Date()).getTime();
@@ -160,6 +169,7 @@ MPMatch.prototype.trigger = function(type, data, unreliable){
 /* Update the centralized state using a path and an object.
  */ 
 MPMatch.prototype.updateState = function(path, obj){
+	// Remove leading and ending slashes in path
 	this.socket.emit('updateState', {path:path, obj:obj});
 };
 MPMatch.prototype.onStateChanged = function(arg1, arg2){
