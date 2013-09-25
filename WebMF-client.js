@@ -1,8 +1,22 @@
 var WebMF = {
 	debug: true,
-	clog: function(message) {
+	verbose: true,
+	log: function(message) {
 		if (this.debug) {
-			console.log("WebMF:   " + message);
+			if (this.verbose) {
+				var caller = arguments.callee.caller.toString().replace("function ", "");
+    				caller = caller.substring(0, caller.indexOf("("));
+				console.log("Debug WebMF (called from: "+caller+"):   " + message);
+			} else {
+				console.log("Debug WebMF:   " + message);
+			}
+		}
+	}, 
+	vlog: function(message) {
+		if (this.debug && this.verbose) {
+			var caller = arguments.callee.caller.toString().replace("function ", "");
+    			caller = caller.substring(0, caller.indexOf("("));
+			console.log("Debug WebMF (called from: "+caller+"):   " + message);
 		}
 	}
 };
