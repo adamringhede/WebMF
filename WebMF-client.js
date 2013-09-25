@@ -45,18 +45,18 @@ function MPMatch(socket, matchnumber, players){
 				stateObjectReference[pathSteps[i]] = {};
 			}
 			if(pathSteps[i] !== null){
-	            if(i === 0){
+	        		if(i === 0){
 					if(pathSteps.length === 1){
 						stateObjectReference[pathSteps[i]] = obj;
 					} else {
 						stateObjectReference = self.state[pathSteps[i]];
 					}
-	            } else {
+	            		} else { // THIS CAN PROBABLY BE REMVOVED
 					if(i === pathSteps.length-1){
 						stateObjectReference[pathSteps[i]] = obj;
 						break;
 					} else {
-	                	stateObjectReference = stateObjectReference[pathSteps[i]];
+	                			stateObjectReference = stateObjectReference[pathSteps[i]];
 					}
 	            }
 
