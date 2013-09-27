@@ -385,7 +385,11 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	if(emptySlots === 0 && filters.min === 0){
 		// Create a new
 		console.log("Creating a new match.");
-		this.addMatch(filters);
+		var newMatch = this.addMatch(filters);
+		if(handler) {
+			if (newMatch.id === "") handler(newMatch, i); // This is a temporary match
+			else handler(newMatch, i, newMatch.id); // This is a persistent match
+		}
 		return;
 	}
 	// 
