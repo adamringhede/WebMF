@@ -305,6 +305,11 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			player.socket.emit('match found', {match:matchNumber, id:persistentID, players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNumber);
+			
+			/* POSSIBLE IMPROVEMENT
+			if(self.playerQueue > 0)
+				self.putPlayersInMatches();
+			*/ 
 		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
 	}
 };
@@ -390,7 +395,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			if (newMatch.id === "") handler(newMatch, i); // This is a temporary match
 			else handler(newMatch, i, newMatch.id); // This is a persistent match
 		}
-		return;
+		return true;
 	}
 	// 
 	
