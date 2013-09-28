@@ -12,15 +12,17 @@ Copyright 2013 Adam David Ringhede
 var socketio = require('socket.io'),
 	fs = require('fs'),
 	mongo = require('mongoskin'),
-	_ = require('lodash');
-var io = socketio.listen(8083),
+	_ = require('lodash'),
+	io = socketio.listen(8083),
 	db = mongo.db('localhost:27017/WebMF', {safe:true}),
 	BSON = mongo.BSONPure;
+	
+// Used to creat IDs for mongoDB
 function objectId(theidID){
 	return new BSON.ObjectID(theidID);
 }
-	
 db.bind('match');
+
 
 function Player(playerName, sock){
 	this.name = playerName || "";
