@@ -67,7 +67,6 @@ function Match(specs, id){
 		if(this.id !== ""){
 			// Grab existing match from DB
 			db.match.findOne({_id:objectId(this.id)}, function(err, foundMatch){
-				console.log("FOUND MATCH");
 				self.whosTurn = foundMatch.whosTurn;
 				self.persistent = foundMatch.spec.persistent;
 				self.customSpecs = foundMatch.spec.customFilters;
