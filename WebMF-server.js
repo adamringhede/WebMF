@@ -405,7 +405,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	var poweredPos, queuePos;
 	// The new position is 2 to the power of the number of attempts the user has made.
 	// If this exceeds the length of the queue, the new position will be at the end of the queue. 
-	if((poweredPos = Math.pow(2,player.attempts)) > this.playerQueue.length) {
+	if((poweredPos = Math.pow(2,player.attempts)) < this.playerQueue.length) {
 		queuePos = poweredPos;
 	} else {
 		queuePos = this.playerQueue.length;
