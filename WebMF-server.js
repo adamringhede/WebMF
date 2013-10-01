@@ -293,9 +293,9 @@ function MatchMaster(gameName){
 MatchMaster.prototype.putPlayersInMatches = function(){ 
 	if(this.playerQueue.length !== 0){
 		var self = this;
+		var player = self.playerQueue.shift();
 		this.findOpenMatch(function(match, matchNumber, persistentID){
 			// Found an open match
-			var player = self.playerQueue.shift();
 			var players = [];
 			match.addPlayer(player);
 			for(var i = 0; i < match.players.length; i++) {
@@ -311,7 +311,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			if(self.playerQueue > 0)
 				self.putPlayersInMatches();
 			*/ 
-		}, self.playerQueue[0].matchFilters, self.playerQueue[0]);
+		}, self.playerQueue[0].matchFilters, player);
 	}
 };
 MatchMaster.prototype.addMatch = function(specifications, id){
@@ -402,7 +402,6 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	
 	// Move the player further back in the queue if no match was found to allow for new players to matchmake.
 	player.attempts += 1;
-	var pl = this.playerQueue.shift();
 	var poweredPos, queuePos;
 	// The new position is 2 to the power of the number of attempts the user has made.
 	// If this exceeds the length of the queue, the new position will be at the end of the queue. 
@@ -411,7 +410,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	} else {
 		queuePos = this.playerQueue.length;
 	}
-	this.playerQueue.splice(queuePos, 0, pl);
+	this.playerQueue.splice(queuePos, 0, players);
 	
 	return false;
 };
