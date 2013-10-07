@@ -666,19 +666,15 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 }
 
-function startServer(){
-	
-}
-	
 (function(){
 	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));// require('./config').games,
 		running = {},
 		adminSockets = [];
 	
 	io.of('/administration').on('connection', function(socket){
-		//if(adminSockets.indexOf(socket) === -1){
-			adminSockets.push(socket);
-	//	}
+		
+		adminSockets.push(socket);
+			
 		setTimeout(function(){
 		//	socket.emit('gotServerStates', running)
 		}, 1000);
