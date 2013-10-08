@@ -557,7 +557,10 @@ function gameConnectionHandler(socket, matchMaster){
 				socket.get('nickname', function(err,player){
 					for(var i = 0; i < match.players.length; i++){
 						if(match.players[i].socket.id !== socket.id){
-							match.players[i].socket.emit(type, data);
+							match.players[i].socket.emit(type, {
+								data: data,
+								by: player
+							});
 						}
 					}
 				});
