@@ -171,7 +171,9 @@ MPMatch.prototype.leave = function(){
  * executed if the event was triggered on this MPMatch object. 
  */
 MPMatch.prototype.bind = function(type, callback){
-	this.socket.on(type, callback);
+	this.socket.on(type, function(event){
+		callback(data.data, data.by);
+	});
 	this.socket.emit('customEvent', type);
 };
 /* Trigger and event and send out data. The player who triggers it, 
