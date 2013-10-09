@@ -176,7 +176,7 @@ Match.prototype.addPlayer = function(player){
 	}
 	if (this.players.length === this.minSize){
 		for(var i = 0, l = this.players.length; i < l; i++){
-			this.players[i].emit('minReached');
+			this.players[i].socket.emit('minReached');
 		}
 	}
 	
