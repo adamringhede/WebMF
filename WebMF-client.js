@@ -348,7 +348,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 	this.socket.on('match found', function (data) {
 		
 		var nm;
-		if(parameters.type === "TurnBased"){
+		if (parameters.type === "TurnBased") {
 			nm = new MPTurnBasedMatch(self.socket, data.match, data.players);
 			nm.whosTurn = data.whosTurn;
 		} else {
@@ -357,7 +357,7 @@ MPSession.prototype.startMatchmaking = function(parameters){
 		nm.localPlayerId = self.localPlayerId;
 		nm.state = data.state;
 		nm.host = nm.players.get(data.host.id) || new MPPlayer({playerId: data.host.id, name:"host"});
-		if(!parameters.waitForOtherPlayers) {
+		if (!parameters.waitForOtherPlayers) {
 			self._onMatchFound(nm);
 		}
 		self.matchInProgress = true;

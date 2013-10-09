@@ -52,7 +52,7 @@ Player.prototype.info = function(){
  */
 function Match(specs, id){
 	this.players = [];
-	this.type = specs ? (specs.type ? specs.type : false) : false;
+	this.type = spec ? ( specs.type || "" ) : "";
 	this.host = null;
 	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
@@ -179,13 +179,19 @@ Match.prototype.addPlayer = function(player){
 			this.players[i].emit('minReached');
 		}
 	}
-	if(this.whosTurn === "") {
-		// It is a new match so a player to start needs to be selected.
-		this.whosTurn = player.socket.id;
-		for(var i = 0; i < this.players.length; i++){
-			this.players[i].socket.emit('turnChanged', this.whosTurn);
+	
+	if (this.type === "TurnBased") {
+		// If it is a new match, whosTurn need to be set. 
+		if(this.whosTurn === "") {
+			this.whosTurn = player.socket.id;
+			for(var i = 0; i < this.players.length; i++){
+				this.players[i].socket.emit('turnChanged', this.whosTurn);
+			}
 		}
 	}
+	
+	// Notify other players
+	match.playerJoined(player);
 };
 Match.prototype.turnChanged = function(){
 	if(this.persistent && this.id !== ""){
@@ -297,10 +303,15 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			for(var i = 0; i < match.players.length; i++) {
 				players.push(match.players[i].info());
 			}
-			self.removePlayerFromQueue(player.socket.id);
 			self.queueChanged();
-			player.socket.emit('match found', {match:matchNumber, id:persistentID, players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn});
-			match.playerJoined(player);
+			player.socket.emit('match found', {
+				match: matchNumber, 
+				id: persistentID, 
+				players: players, 
+				state: match.state, 
+				host: match.host.info(), 
+				whosTurn: match.whosTurn
+			});
 			player.socket.set('currentMatchNumber', matchNumber);
 			
 			/* POSSIBLE IMPROVEMENT
@@ -371,6 +382,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
+				&& this.matches[i].type === filter.type
 				&& this.matches[i].persistent === (filters.persistent || false) 
 				&& this.matches[i].players.length >= (filters.min || 0) 
 				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
