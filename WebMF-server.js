@@ -63,6 +63,7 @@ function Match(specs, id){
 	this.whosTurn = ""; // SHOULD BE A PLAYER ID
 	this.closed = false;
 	this._onChange = function(){};
+	this.playerLeft = function(){};
 	this.reselectHost();
 	var self = this;
 	if(this.persistent){ 
@@ -126,7 +127,6 @@ Match.prototype.onStateChange = function(path, obj){
 		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
 	}
 	this.change();
-	console.log("\n\n\n\n " + this.persistent + "\n\n\n\n ")
 	if(this.persistent && this.id !== ""){
 		db.match.update({_id:objectId(this.id)}, {$set: {'state': this.state}}, function(err, handler){
 			if(err){
@@ -208,8 +208,8 @@ Match.prototype.removePlayer = function(playerId){
 		if(this.players[i].socket.id === playerId){
 			this.players[i].inmatch = false;
 			this.players.splice(i,1);
-			this.change();
-			
+			//this.change();
+			this.playerLeft();
 			if(this.host.socket.id === playerId){
 				this.reselectHost();
 			}
@@ -285,13 +285,9 @@ function MatchMaster(gameName){
 	this.matches = [];
 	this.addMatch();
 	this.addMatch();
-	var self = this;
-	this.coordinatorInterval = setInterval(function(){
-		self.putPlayersInMatches();
-	}, 3000);
 }
 MatchMaster.prototype.putPlayersInMatches = function(){ 
-	if(this.playerQueue.length !== 0){
+	if(this.playerQueue.length > 0){
 		var self = this;
 		var player = self.playerQueue.shift();
 		this.findOpenMatch(function(match, matchNumber, persistentID){
@@ -311,17 +307,17 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 			if(self.playerQueue > 0)
 				self.putPlayersInMatches();
 			*/ 
-		}, self.playerQueue[0].matchFilters, player);
+		}, player.matchFilters, player);
 	}
 };
 MatchMaster.prototype.addMatch = function(specifications, id){
 	var nm = new Match(specifications, id),
 		self = this;
 	this.matches.push(nm);
-	nm.change(function(){
-		self.changed();
-	});
-	this.changed();
+	nm.playerLeft = function(){
+		self.putPlayersInMatches();
+	}
+	//this.changed();
 	return nm;
 };
 MatchMaster.prototype.getMatch = function(matchNumber){
@@ -559,7 +555,7 @@ function gameConnectionHandler(socket, matchMaster){
 						if(match.players[i].socket.id !== socket.id){
 							match.players[i].socket.emit(type, {
 								data: data,
-								by: player
+								by: "player"
 							});
 						}
 					}
@@ -613,6 +609,9 @@ function gameConnectionHandler(socket, matchMaster){
 	socket.on('changeTurn', function(){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
+			if(match.players.length <= 1) {
+				return;
+			} 
 			match.turnChanged();
 			var current;
 			for(current = 0; current < match.players.length; current++){
@@ -622,7 +621,7 @@ function gameConnectionHandler(socket, matchMaster){
 			}
 			match.whosTurn = match.players[(current+1) % match.players.length].socket.id;
 			
-			var playerId = "To be selected";
+			var playerId = "";
 			for(var i = 0; i < match.players.length; i++){
 				if(match.players[i].socket.id === match.whosTurn){
 					playerId = match.players[i].socket.id;
