@@ -419,7 +419,6 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 };
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	var match;
-	
 	function addToMatch(match, matchNum, player){
 		if(match && match.players.length < match.maxSize && match.closed === false) {
 			match.addPlayer(player); 
@@ -555,7 +554,7 @@ function gameConnectionHandler(socket, matchMaster){
 						if(match.players[i].socket.id !== socket.id){
 							match.players[i].socket.emit(type, {
 								data: data,
-								by: "player"
+								by: "player
 							});
 						}
 					}
