@@ -52,7 +52,7 @@ Player.prototype.info = function(){
  */
 function Match(specs, id){
 	this.players = [];
-	this.type = spec ? ( specs.type || "" ) : "";
+	this.type = specs ? ( specs.type || "" ) : "";
 	this.host = null;
 	this.minSize = specs ? specs.min : 0;
 	this.maxSize = specs ? specs.max : 5;
@@ -124,16 +124,16 @@ Match.prototype.changeState = function(path, obj){
 };
 Match.prototype.onStateChange = function(path, obj){
 	for(var i = 0; i < this.players.length; i++){
-		this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
-	}
-	this.change();
-	if(this.persistent && this.id !== ""){
-		db.match.update({_id:objectId(this.id)}, {$set: {'state': this.state}}, function(err, handler){
-			if(err){
-				console.log("Error when trying to update match state in database");
-			}
-		});
-	}
+			this.players[i].socket.emit('stateChanged', {path:path,obj:obj});
+		}
+		this.change();
+		if(this.persistent && this.id !== ""){
+			db.match.update({_id:objectId(this.id)}, {$set: {'state': this.state}}, function(err, handler){
+				if(err){
+					console.log("Error when trying to update match state in database");
+				}
+			});
+		}
 };
 Match.prototype.getState = function(path){
 	if(!path) return this.state;
@@ -192,7 +192,35 @@ Match.prototype.addPlayer = function(player){
 	}
 	
 	// Notify other players
-	match.playerJoined(player);
+	this.playerJoined(player);
+};
+Match.prototype.changeTurn = function(specifiedPlayer){
+	if (this.players.length <= 1) {
+		return;
+	} 
+	if (!specifiedPlayer) {
+		var current;
+		for (current = 0; current < this.players.length; current++) {
+			if (this.players[current].socket.id === this.whosTurn) {
+				break;
+			}
+		}
+		this.whosTurn = this.players[(current+1) % this.players.length].socket.id;
+	} else {
+		this.whosTurn = specifiedPlayer;
+	}
+	/*
+	var playerId = "";
+	for (var i = 0; i < this.players.length; i++) {
+		if(this.players[i].socket.id === this.whosTurn){
+			playerId = this.players[i].socket.id;
+		}
+	}*/
+
+	for (var i = 0; i < this.players.length; i++) {
+		this.players[i].socket.emit('turnChanged', this.whosTurn);
+	}
+	this.turnChanged();
 };
 Match.prototype.turnChanged = function(){
 	if(this.persistent && this.id !== ""){
@@ -202,7 +230,7 @@ Match.prototype.turnChanged = function(){
 			}
 		});
 	}
-}
+};
 /* Remove a player with said id
  */
 Match.prototype.removePlayer = function(playerId){
@@ -328,7 +356,7 @@ MatchMaster.prototype.addMatch = function(specifications, id){
 	this.matches.push(nm);
 	nm.playerLeft = function(){
 		self.putPlayersInMatches();
-	}
+	};
 	//this.changed();
 	return nm;
 };
@@ -383,7 +411,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
-				&& this.matches[i].type === filter.type
+				&& this.matches[i].type === filters.type
 				&& this.matches[i].persistent === (filters.persistent || false) 
 				&& this.matches[i].players.length >= (filters.min || 0) 
 				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
@@ -419,7 +447,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	} else {
 		queuePos = this.playerQueue.length;
 	}
-	this.playerQueue.splice(queuePos, 0, players);
+	this.playerQueue.splice(queuePos, 0, player);
 	
 	return false;
 };
@@ -471,7 +499,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 					// Did not find a match, should emit error
 					player.socket.emit('couldNotAddToMatch', {matchNum: matchNum});
 				}
-			})
+			});
 		} else {
 			// Match is running
 			addToMatch(match, matchNum, player);
@@ -567,7 +595,7 @@ function gameConnectionHandler(socket, matchMaster){
 						if(match.players[i].socket.id !== socket.id){
 							match.players[i].socket.emit(type, {
 								data: data,
-								by: "player
+								by: "player"
 							});
 						}
 					}
@@ -618,30 +646,9 @@ function gameConnectionHandler(socket, matchMaster){
 			matchMaster.getMatch(num).closed = true;
 		});
 	});
-	socket.on('changeTurn', function(){
+	socket.on('changeTurn', function(specifiedPlayerId){
 		socket.get('currentMatchNumber', function(err, num){
-			var match = matchMaster.getMatch(num);
-			if(match.players.length <= 1) {
-				return;
-			} 
-			match.turnChanged();
-			var current;
-			for(current = 0; current < match.players.length; current++){
-				if(match.players[current].socket.id === match.whosTurn){
-					break;
-				}
-			}
-			match.whosTurn = match.players[(current+1) % match.players.length].socket.id;
-			
-			var playerId = "";
-			for(var i = 0; i < match.players.length; i++){
-				if(match.players[i].socket.id === match.whosTurn){
-					playerId = match.players[i].socket.id;
-				}
-			}
-			for(var i = 0; i < match.players.length; i++){
-				match.players[i].socket.emit('turnChanged', playerId);
-			}
+			matchMaster.getMatch(num).changeTurn(specifiedPlayerId || false);
 		});
 	});
 	socket.on('getHost', function(){
@@ -681,10 +688,10 @@ function gameConnectionHandler(socket, matchMaster){
 }
 
 (function(){
-	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));// require('./config').games,
+	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));
 		running = {},
 		adminSockets = [];
-	
+	/*
 	io.of('/administration').on('connection', function(socket){
 		
 		adminSockets.push(socket);
@@ -715,24 +722,27 @@ function gameConnectionHandler(socket, matchMaster){
 	function pushServerStates(){
 		broadcastAdmins('gotServerStates', running);
 	}
-	setInterval(pushServerStates, 7000);
-	setTimeout(function(){
+	setInterval(pushServerStates, 7000);*/
+//	setTimeout(function(){
 	// Start games in config file
-	for(var i = 0; i < games.length; i++){/*
+	for(var i = 0; i < games.length; i++){
 		if(!games[i].shouldRun){
 			running[games[i].name] = {
 				game: games[i].name,
 				running: false
 			};
-		}*/
+		}
 		running[i] = (function(){
 			console.log("Started: "+games[i].name);
+			/*
 			broadcastAdmins('startedGameConnector', {
 				name: games[i].name,
 				index: i,
 				max: games.length
 			});
+			*/
 			var matchMaster = new MatchMaster(games[i].name);
+			/*
 			matchMaster.changed(function(matches, gameName){
 			//	broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
 				pushServerStates();
@@ -740,7 +750,7 @@ function gameConnectionHandler(socket, matchMaster){
 			matchMaster.queueChanged(function(queue, gameName){
 			//	broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
 				pushServerStates()
-			});
+			});*/
 			io.of('/'+games[i].name).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster);
 			});
@@ -752,5 +762,5 @@ function gameConnectionHandler(socket, matchMaster){
 			};
 		})();	
 	}
-	}, 2000);
+//	}, 2000);
 })();

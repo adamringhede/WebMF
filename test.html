@@ -20,15 +20,15 @@ function init(name, min, game){
 			type: "TurnBased",
 			filters: {
 				min: min || 0,
-				max: 4//,
-			//	persistent: true
+				max: 4
+//				persistent: true
 			},
 			onQueue: function(){
 				console.log("Put in queue");
 			},
 			waitForOtherPlayers: true,
 			onMatchFound: function(newmatch){
-				console.log("Match found with id: " + newmatch.match);
+				console.log("Match found with id: " + newmatch.matchNumber);
 				match = newmatch;
 				match.onPlayerJoined(function(p){
 					console.log(p);

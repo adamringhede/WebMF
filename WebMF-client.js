@@ -2,8 +2,8 @@ var WebMF = {
 	debug: true,
 	verbose: true,
 	log: function(message) {
-		if (this.debug) {
-			if (this.verbose) {
+		if (WebMF.debug) {
+			if (WebMF.verbose) {
 				var caller = arguments.callee.caller.toString().replace("function ", "");
     				caller = caller.substring(0, caller.indexOf("("));
 				console.log("Debug WebMF (called from: "+caller+"):   " + message);
@@ -279,16 +279,17 @@ MPSession.prototype.onConnect = function(f, error){
 		var self = this;
 		
 		// Handle the event of server being offline
-		var timeout = setTimeout(function(){
+		var connectionTimeout = setTimeout(function(){
 			if(self.socket.socket.connected !== true){
-				if(error) error("Can not connect to the server"); 
+				WebMF.log("Can not connect to the server."); 
+				if(error) error();
 				return false;
 			}
 		}, 3000);
 		
 		// Set eventlisteners on the socket
 		this.socket.on('connect', function (data) {
-			window.clearTimeout(timeout);
+			window.clearTimeout(connectionTimeout);
 			console.log("Connecton established");
 			self.socket.emit('set nickname', self.localPlayerName);
 			self._onConnect();
