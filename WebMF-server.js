@@ -186,6 +186,7 @@ Match.prototype.addPlayer = function(player){
 			this.whosTurn = player.socket.id;
 			for(var i = 0; i < this.players.length; i++){
 				this.players[i].socket.emit('turnChanged', this.whosTurn);
+				this.turnChanged();
 			}
 		}
 	}
