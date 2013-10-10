@@ -64,6 +64,7 @@ function Match(specs, id){
 	this.closed = false;
 	this._onChange = function(){};
 	this.playerLeft = function(){};
+	this.onOpen = function(){};
 	this.reselectHost();
 	var self = this;
 	if(this.persistent){ 
@@ -328,6 +329,10 @@ Match.prototype.kickPlayer = function(playerId){
 		}
 	}
 };
+Match.prototype.open = function(){
+	this.closed = false;
+	this.onOpen();
+};
 
 function MatchMaster(gameName){
 	this._onChanged = function(){};
@@ -372,6 +377,9 @@ MatchMaster.prototype.addMatch = function(specifications, id){
 		self = this;
 	this.matches.push(nm);
 	nm.playerLeft = function(){
+		self.putPlayersInMatches();
+	};
+	nm.onOpen = function(){
 		self.putPlayersInMatches();
 	};
 	//this.changed();
@@ -421,7 +429,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	for(var i = 0; i < this.matches.length; i++){
 		if(!this.matches[i]) {
 			// This is an empty slot.
-			this.matches[i] = new Match(filters);
+			//this.matches[i] = new Match(filters);
 			emptySlots += 1;
 		}/*
 		console.log("\n\n\n\n\n\n\n\n\n");
@@ -660,7 +668,7 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 	socket.on('openMatch', function(){
 		socket.get('currentMatchNumber', function(err, num){
-			matchMaster.getMatch(num).closed = false;
+			matchMaster.getMatch(num).open();
 		});
 	});
 	socket.on('closeMatch', function(){
