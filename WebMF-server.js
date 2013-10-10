@@ -311,6 +311,23 @@ Match.prototype.playerJoined = function(from){
 		});
 	}
 };
+Match.prototype.kickPlayer = function(playerId){
+	// Remove the kicked player from the match.
+	this.removePlayer(playerId);
+	// Notify players
+	for(var i = 0; i < this.players.length; i++){
+		// Notify other players
+		if(this.players[i].socket.id !== playerId){
+			this.players[i].socket.emit('playerLeft', {
+				playerId: socket.id,
+				name: player.name
+			});
+		// Notify the kicked player
+		} else {
+			this.players[i].socket.emit('gotKicked');
+		}
+	}
+};
 
 function MatchMaster(gameName){
 	this._onChanged = function(){};
@@ -664,22 +681,7 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 	socket.on('kickPlayer', function(playerId){
 		socket.get('currentMatchNumber', function(err, num){
-			var match = matchMaster.getMatch(num);
-			// Remove the kicked player from the match.
-			match.removePlayer(playerId);
-			// Notify players
-			for(var i = 0; i < match.players.length; i++){
-				// Notify other players
-				if(match.players[i].socket.id !== playerId){
-					match.players[i].socket.emit('playerLeft', {
-						playerId: socket.id,
-						name: player.name
-					});
-				// Notify the kicked player
-				} else {
-					match.players[i].socket.emit('gotKicked');
-				}
-			}
+			matchMaster.getMatch(num).kickPlayer(playerId);
 		});
 	});
 	socket.on('leaveQueue', function(playerId){
