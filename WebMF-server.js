@@ -431,16 +431,12 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 			// This is an empty slot.
 			//this.matches[i] = new Match(filters);
 			emptySlots += 1;
-		}/*
-		console.log("\n\n\n\n\n\n\n\n\n");
-		console.log(filters);
-		console.log(this.matches[i]);
-				console.log("\n\n\n\n\n\n\n\n\n");*/
+		}
 		if(this.matches[i] instanceof Match){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
 				&& this.matches[i].maxSize === filters.max
-			//	&& this.matches[i].type === filters.type
+				&& this.matches[i].type === filters.type
 				&& this.matches[i].persistent === (filters.persistent || false) 
 				&& this.matches[i].players.length >= (filters.min || 0) 
 				&& _.where([this.matches[i].customSpecs], filters.customFilters).length > 0 ){
