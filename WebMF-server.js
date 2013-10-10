@@ -523,6 +523,7 @@ function gameConnectionHandler(socket, matchMaster){
 			player.matchFilters = {
 				max: parameters.max,
 				min: parameters.min,
+				type: parameters.type,
 				persistent: parameters.persistent,
 				customFilters: parameters.customFilters
 			};
