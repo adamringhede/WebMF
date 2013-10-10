@@ -518,13 +518,13 @@ function gameConnectionHandler(socket, matchMaster){
 			socket.emit('name set', socket.id);
 		});
 	});
-	socket.on('matchmake', function(matchFilters){
+	socket.on('matchmake', function(parameters){
 		socket.get('nickname', function(err, player){
 			player.matchFilters = {
-				max: matchFilters.max,
-				min: matchFilters.min,
-				persistent:matchFilters.persistent,
-				customFilters: matchFilters.customFilters
+				max: parameters.max,
+				min: parameters.min,
+				persistent: parameters.persistent,
+				customFilters: parameters.customFilters
 			};
 			matchMaster.addPlayerToQueue(player);
 		});
