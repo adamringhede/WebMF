@@ -274,7 +274,8 @@ MPSession.prototype.onConnect = function(f, error){
 	try{
 		// Connect to the server
 		this.socket = io.connect(this.connectionInfo.hostname+':'+this.connectionInfo.port+'/'+this.connectionInfo.gameName, {
-			reconnect:false
+			reconnect:false,
+			'force new connection': true
 		});
 		var self = this;
 		
