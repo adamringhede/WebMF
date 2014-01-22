@@ -1,12 +1,12 @@
 #  WebMF
 
-A javascript framework using web sockets to simplify the process of making multiplayer games with web technologies that can work across different platforms.
+A javascript framework using web sockets and simplifying the development of multiplayer games with web technologies.
 
 ## About
 
 ### Mission
 
-To create a platform for developers making multiplayer games. It should have an easy to use api, while at the same time be highly functional, suiting the needs of most applications. The developer should be able to make use of most if not all of the functionality with little to no knowledge of networking.
+To create a platform for developers making multiplayer games. It should have an easy to use api, while at the same time be highly functional and suit the needs of most applications. The developer should be able to make use of most of the functionality with little to no knowledge of networking.
 
 ### Features
 	– Matchmaking
@@ -70,9 +70,6 @@ like user input and graphics which makes the framework less versatile and device
 Some takes a very long time to setup and has a steep learning curve. There is a need for 
 something easier, more beginner friendly.  
 
-#### Q: This project is really cool, how can I get involved?
-A: Just using the framework and submitting feedback is worth a lot at this stage. 
-If you want to help out with documentation, tutorials, testing, implementation, or coming up with new features or requirements, contact me (Adam Ringhede) by email. 
 	
 ### Dependencies
 	– Node.js
