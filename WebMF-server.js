@@ -535,12 +535,12 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 
 function gameConnectionHandler(socket, matchMaster){
 	socket.on('set nickname', function (playerName) {
-		socket.set('nickname', new Player(playerName, socket), function () {
+		socket.set('player', new Player(playerName, socket), function () {
 			socket.emit('name set', socket.id);
 		});
 	});
 	socket.on('matchmake', function(parameters){
-		socket.get('nickname', function(err, player){
+		socket.get('player', function(err, player){
 			player.matchFilters = {
 				max: parameters.max,
 				min: parameters.min,
@@ -552,7 +552,7 @@ function gameConnectionHandler(socket, matchMaster){
 		});
 	});
 	socket.on('disconnect', function(){
-		socket.get('nickname', function(err, player){
+		socket.get('player', function(err, player){
 			var match;
 			var players;
 			// Incase the player is in the queue, remove the player.
@@ -692,7 +692,7 @@ function gameConnectionHandler(socket, matchMaster){
 		matchMaster.removePlayerFromQueue(playerId);
 	});
 	socket.on('joinMatch', function(data){
-		socket.get('nickname', function(err, player){
+		socket.get('player', function(err, player){
 			matchMaster.addPlayerToMatch(player, data.matchNum);
 		});
 	});
