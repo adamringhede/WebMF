@@ -12,7 +12,7 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Matchmaking
 		- Be put in a match automatically. 
 		- Use filters for the match-selection.
-			- (In progress) Custom filters
+			- Custom filters
 			- Filters for minimum players in match, and maximum number of spots in match. 
 		- Automatically create a new match if none is found. 
 		- The first player to start matchmaking will be prioritized. 
