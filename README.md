@@ -1,12 +1,12 @@
 #  WebMF
 
-A javascript framework using web sockets and simplifying the development of multiplayer games with web technologies.
+A javascript framework using web sockets and simplifying the development of multiplayer games using web technologies.
 
 ## About
 
 ### Mission
 
-To create a platform for developers making multiplayer games. It should have an easy to use api, while at the same time be highly functional and suit the needs of most applications. The developer should be able to make use of most of the functionality with little to no knowledge of networking.
+To create a platform for developers making multiplayer games. It should have an easy to use api, while at the same time be highly functional and suit the needs of most applications. The developer should be able to make use of all the functionality with little to no knowledge of networking.
 
 ### Features
 	– Matchmaking
@@ -19,12 +19,12 @@ To create a platform for developers making multiplayer games. It should have an 
 	– Broadcast data in current match.
 	– Send data to a single player in your match.
 	– The reciever of data will know who it came from.
-	– Send data as any type of javascript object, even executable functions. 
+	– Send data as any type of javascript object.
 	– Be notified when another player joins the match, leaves and gets disconnected.
 	– Create custom events and listeners for the match. 
 	– Be assigned a unique id on connection, so you can use any nickname you want. 
 	– No polling for events or messages. 
-	– All messaging is reliable by default and asynchronous.
+	– All messaging is reliable by default and asynchronous. 
 	– Close matches (so no new players can join), and open matches. Matches are open by default.
 	– Have the option to create a turnbased match 
 		- Be notified when the turn changes
@@ -34,26 +34,14 @@ To create a platform for developers making multiplayer games. It should have an 
 		- Choose to use a persistant matchstate that will be retained, so that you can continue
 		  playing from where you left of. 
 	– Choose a host for client-server architectures on top of the platform. 
-		- Send data to the host
+		- Send data to the host dynamically
 	– Send faster but unreliable messages
 	– Kick a player from the match.
 	– Host several multiplayer games on the same node service. 
-	– (Unstable) Monitor the activity of the server and all running games with a GUI.
-	– Invite other players to a match
-		– Players who recieve an invitation has to option to accept or decling
-		– When accepting an invitation, the player will automatically leave the current match
 	– Join a specified ongoing open match without the use of matchmaking
-		- (Planned #1) If the match the match is full, be put in a queue. 
+		- (Planned) If the match the match is full, be put in a queue. 
 			- The player can be notified when its position in the queue changes. 
-	– (Planned #2) Massive Multiplayer matches for huge games with different needs.
-		- Save state to permanent storage
-	– (Planned #2) Use plugins on top of the platform.
-	
-### Plugins
-	– (Planned) Graphical UI for matchmaking
-	– (Planned) Chat with UI
-	– (Planned) Vote-kick
-	
+
 ### Q&A
 
 #### Q: I'm new to web development, will I be able to use this?
@@ -82,27 +70,16 @@ something easier, more beginner friendly.
 
 ### Setup
 
-#### Step 1. Install node and socket.io
-If you have used or already installed node and socket.io this step can be skipped.
-
-Download node from nodejs.org and install it on whatever operating system you are using.
-
-You can install socket.io with the following command from the terminal:
-``` Shell
-npm install socket.io-client
-```
-
-#### Step 2. Setup the backend
+#### Step 1. Setup the backend
 Add the file WebMF-server.js somewhere on your server.
-Move to the directory you put the file in and start the server by 
-using the following command from the terminal:
+Start the server by using the following command from the terminal:
 ``` Shell
 node WebMF-server.js
 ```
 
-#### Step 3. Add WebMF and socket.io to your web application
-It is very easy to start using this framework. Just import the file WebMF-client.js to your directory
-you will use for the web. Do the same with socket.io.min.js Add the following lines in your HTML-file:
+#### Step 2. Add WebMF and socket.io to your web application
+Import the file WebMF-client.js to the directory you will use for the web application. 
+Do the same with socket.io.min.js Add the following lines in your HTML-file:
 
 ```HTML
 <script src="socket.io.min.js" type="text/javascript"></script>
