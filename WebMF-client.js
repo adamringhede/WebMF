@@ -1,25 +1,3 @@
-var WebMF = {
-	debug: true,
-	verbose: true,
-	log: function(message) {
-		if (WebMF.debug) {
-			if (WebMF.verbose) {
-				var caller = arguments.callee.caller.toString().replace("function ", "");
-    				caller = caller.substring(0, caller.indexOf("("));
-				console.log("Debug WebMF (called from: "+caller+"):   " + message);
-			} else {
-				console.log("Debug WebMF:   " + message);
-			}
-		}
-	}, 
-	vlog: function(message) {
-		if (this.debug && this.verbose) {
-			var caller = arguments.callee.caller.toString().replace("function ", "");
-    			caller = caller.substring(0, caller.indexOf("("));
-			console.log("Debug WebMF (called from: "+caller+"):   " + message);
-		}
-	}
-};
 
 function MPMatch(socket, matchnumber, players){
 	this.socket = socket;
