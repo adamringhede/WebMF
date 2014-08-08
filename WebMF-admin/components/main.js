@@ -4,14 +4,6 @@ var socket = io.connect('Adams-MacBook-Pro.local:8083/administration', {
 });
 
 
-
-
-
-function fetchGameConnectors(func){
-	socket.emit('getConnectors');
-	socket.on('gotConnectors', func);
-}
-
 (function(){
 
 ///
@@ -137,6 +129,10 @@ var AppView = Backbone.View.extend({
 			}, 3000);
 		});
 		this.listenTo(GameMonitors, 'add', this.addOne);
+		function fetchGameConnectors(func){
+			socket.emit('getConnectors');
+			socket.on('gotConnectors', func);
+		}
 		fetchGameConnectors(function(games){
 			GameMonitors.set(games);
 		});
