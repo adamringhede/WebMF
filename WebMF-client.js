@@ -463,7 +463,7 @@
 	};
 
 
-	window.Polynect = {
+	window.WebMF = {
 		Session: Session
 	};
 })();
