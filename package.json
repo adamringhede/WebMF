@@ -1,0 +1,18 @@
+{
+  "name": "WebMF-master",
+  "version": "0.0.0",
+  "description": "A javascript framework using web sockets and simplifying the development of multiplayer games using web technologies.",
+  "main": "WebMF-server.js",
+  "scripts": {
+    "test": "echo \"no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "mongoskin": "~1.4.4",
+    "mongodb": "*",
+    "bson": "~0.2.11",
+    "node-gyp": "~1.0.1"
+  }
+}
