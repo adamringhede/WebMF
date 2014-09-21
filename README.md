@@ -119,24 +119,3 @@ session.onConnect(function(){
 		}
 	});
 });
-```
-#### Binding and triggering events on the match
-Once you have recieved a new match object (passed as a parameter to the onMatchFound-callback) you can start doing 
-alot of things with it. One thing is to bind and trigger events. To listen for for an event called playerMoved you
-can use the following code.
-```JS
-match.bind("playerMoved", function(data){
-	console.log("Player " + data.playerNickname + " moved to X:" + data.position.x + " Y:" + data.position.y);
-});
-```
-
-To trigger this event another client could use the following code.
-```JS
-match.trigger("playerMoved", {
-	playerNickname:"John Doe",
-	position: {
-		x: 24,
-		y: 5
-	}
-});
-```
