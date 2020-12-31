@@ -143,7 +143,7 @@
 	 */
 	Match.prototype.leave = function(){
 		this.socket.emit('leaveMatch');
-		this._onLeaveMatch();§
+		this._onLeaveMatch();
 	};
 	/* Bind an eventhandler to a custom event. This eventhandler will not be 
 	 * executed if the event was triggered on this Match object. 

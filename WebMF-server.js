@@ -9,11 +9,12 @@ Copyright 2013 Adam David Ringhede
 */
 
 
+
 var socketio = require('socket.io'),
 	fs = require('fs'),
 	mongo = require('mongoskin'),
 	_ = require('lodash'),
-	io = socketio.listen(8083),
+	io = socketio.listen(8083,  {'transports': ['websocket', 'polling']}),
 	db = mongo.db('localhost:27017/WebMF', {safe:true}),
 	BSON = mongo.BSONPure;
 	
@@ -22,6 +23,24 @@ function objectId(theidID){
 	return new BSON.ObjectID(theidID);
 }
 db.bind('match');
+
+
+function polyfillSocket(socket) {
+	const data = {};
+	socket.set = function (key, value, callback) {
+		data[key] = value;
+		if (callback) {
+			callback();
+		}
+	}
+	socket.get = function (key, callback) { // callback(err, value)
+		if (data[key]) {
+			callback(null, data[key])
+		} else {
+			callback(new Exception("Key is not set"), null)
+		}
+	}
+}
 
 
 function Player(playerName, sock){
@@ -534,6 +553,8 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 };
 
 function gameConnectionHandler(socket, matchMaster){
+	polyfillSocket(socket)
+
 	socket.on('set nickname', function (playerName) {
 		socket.set('player', new Player(playerName, socket), function () {
 			socket.emit('name set', socket.id);
@@ -553,6 +574,7 @@ function gameConnectionHandler(socket, matchMaster){
 	});
 	socket.on('disconnect', function(){
 		socket.get('player', function(err, player){
+			console.log("player diconnected with id " + socket.id)
 			var match;
 			var players;
 			// Incase the player is in the queue, remove the player.
@@ -579,6 +601,7 @@ function gameConnectionHandler(socket, matchMaster){
 				// If the last player disconnected from the match
 				if(players.length === 0) {
 					// Remove match
+					console.log("Removing match with number " + num)
 					matchMaster.removeMatch(num);
 				}
 			});
