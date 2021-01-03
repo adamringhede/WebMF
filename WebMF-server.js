@@ -37,7 +37,7 @@ function polyfillSocket(socket) {
 		if (data[key]) {
 			callback(null, data[key])
 		} else {
-			callback(new Exception("Key is not set"), null)
+			callback(new Error("Key is not set"), null)
 		}
 	}
 }
@@ -81,11 +81,20 @@ function Match(specs, id){
 	this.customSpecs = specs ? specs.customFilters || {} : {};
 	this.whosTurn = ""; // SHOULD BE A PLAYER ID
 	this.closed = false;
+	this.startedAt = new Date().getTime();
+	this.timeElapsed = 0; // A clock that should be used by all clients to not rely on wall time. 
 	this._onChange = function(){};
 	this.playerLeft = function(){};
 	this.onOpen = function(){};
 	this.reselectHost();
 	var self = this;
+	this.clockUpdateInterval = setInterval(() => {
+		// When a player joins, they need to know the current elapsed time. 
+		this.timeElapsed = (new Date().getTime() - this.startedAt) / 1000;
+		for(var i = 0; i < this.players.length; i++){
+			this.players[i].socket.emit('timeElapsed', this.timeElapsed);
+		}
+	}, 5000);
 	if(this.persistent){ 
 		if(this.id !== ""){
 			// Grab existing match from DB
@@ -366,7 +375,7 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 	if(this.playerQueue.length > 0){
 		var self = this;
 		var player = self.playerQueue.shift();
-		this.findOpenMatch(function(match, matchNumber, persistentID){
+		const foundMatch = this.findOpenMatch(function(match, matchNumber, persistentID){
 			// Found an open match
 			var players = [];
 			match.addPlayer(player);
@@ -389,6 +398,9 @@ MatchMaster.prototype.putPlayersInMatches = function(){
 				self.putPlayersInMatches();
 			*/ 
 		}, player.matchFilters, player);
+		if (!foundMatch) {
+			self.playerQueue.push(player)
+		}
 	}
 };
 MatchMaster.prototype.addMatch = function(specifications, id){
@@ -416,7 +428,7 @@ MatchMaster.prototype.getMatch = function(matchNumber){
 	}
 };
 MatchMaster.prototype.removeMatch = function(matchNumber, force){
-	if(this.getMatch(matchNumber).players.length <= 0 || force === true){
+	if(this.getMatch(matchNumber) && this.getMatch(matchNumber).players.length <= 0 || force === true){
 		this.matches[matchNumber] = null;
 		this.changed();
 		return true;
@@ -444,13 +456,9 @@ MatchMaster.prototype.removePlayerFromQueue = function(playerId){
 	return false;
 }
 MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
-	var emptySlots = 0;
+	// TODO Change the matches structure to be an object instead of an array.
+	// TODO Refactor this entire server.
 	for(var i = 0; i < this.matches.length; i++){
-		if(!this.matches[i]) {
-			// This is an empty slot.
-			//this.matches[i] = new Match(filters);
-			emptySlots += 1;
-		}
 		if(this.matches[i] instanceof Match){
 			if(this.matches[i].players.length < this.matches[i].maxSize // Atleast one open spot
 				&& !this.matches[i].closed // The match is not closed
@@ -469,8 +477,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 		}
 	}
 	// Did not find a match. 
-	if(emptySlots === 0 && filters.min === 0){
-		// Create a new
+	if(filters.min === 0){
 		console.log("Creating a new match.");
 		var newMatch = this.addMatch(filters);
 		if(handler) {
@@ -483,16 +490,7 @@ MatchMaster.prototype.findOpenMatch = function(handler, filters, player){
 	
 	// Move the player further back in the queue if no match was found to allow for new players to matchmake.
 	player.attempts += 1;
-	var poweredPos, queuePos;
-	// The new position is 2 to the power of the number of attempts the user has made.
-	// If this exceeds the length of the queue, the new position will be at the end of the queue. 
-	if((poweredPos = Math.pow(2,player.attempts)) < this.playerQueue.length) {
-		queuePos = poweredPos;
-	} else {
-		queuePos = this.playerQueue.length;
-	}
-	this.playerQueue.splice(queuePos, 0, player);
-	
+
 	return false;
 };
 MatchMaster.prototype.addPlayerToQueue = function(player){
@@ -511,7 +509,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 			for(var i = 0; i < match.players.length; i++) {
 				players.push(match.players[i].info());
 			}
-			player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn, type:match.type});
+			player.socket.emit('joinedMatch', {players:players, state:match.state, host:match.host.info(), whosTurn:match.whosTurn, type:match.type, timeElapsed: match.timeElapsed});
 			match.playerJoined(player);
 			player.socket.set('currentMatchNumber', matchNum);
 		} else {
@@ -639,23 +637,18 @@ function gameConnectionHandler(socket, matchMaster){
 		socket.on(type, function(data){
 			socket.get('currentMatchNumber', function(err, num){
 				var match = matchMaster.getMatch(num);
-				socket.get('nickname', function(err,player){
-					for(var i = 0; i < match.players.length; i++){
-						if(match.players[i].socket.id !== socket.id){
-							match.players[i].socket.emit(type, {
-								data: data,
-								by: "player"
-							});
-						}
+				for(var i = 0; i < match.players.length; i++){
+					if(match.players[i].socket.id !== socket.id){
+						match.players[i].socket.emit(type, data);
 					}
-				});
+				}
 			});
 		});
 	});
 	socket.on('leaveMatch', function(id){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
-			socket.get('nickname', function(err,player){
+			socket.get('player', function(err,player){
 				for(var i = 0; i < match.players.length; i++){
 					if(match.players[i].socket.id !== socket.id){
 						match.players[i].socket.emit('playerLeft', {
@@ -676,7 +669,9 @@ function gameConnectionHandler(socket, matchMaster){
 	socket.on('updateState', function(data){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
-			match.changeState(data.path, data.obj);
+			if (match) {
+				match.changeState(data.path, data.obj);
+			}
 		});
 	});
 	socket.on('getState', function(data){
@@ -776,6 +771,10 @@ function gameConnectionHandler(socket, matchMaster){
 			});
 			*/
 			var matchMaster = new MatchMaster(games[i].name);
+			setInterval(() => {
+				matchMaster.putPlayersInMatches();
+			}, 5000);
+
 			/*
 			matchMaster.changed(function(matches, gameName){
 			//	broadcastAdmins('matchesChanged', {game:gameName, matches:matches});
