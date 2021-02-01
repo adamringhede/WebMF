@@ -83,6 +83,7 @@ function Match(specs, id){
 	this.closed = false;
 	this.startedAt = new Date().getTime();
 	this.timeElapsed = 0; // A clock that should be used by all clients to not rely on wall time. 
+	this.locks = {};
 	this._onChange = function(){};
 	this.playerLeft = function(){};
 	this.onOpen = function(){};
@@ -330,6 +331,12 @@ Match.prototype.broadcast = function(from, data){
 		});
 	}
 };
+Match.prototype.emitToAll = function(key, data) {
+	for(var i = 0; i < this.players.length; i++){
+		if(this.players[i] == null) continue;
+		this.players[i].socket.emit(key, data);
+	}
+}
 Match.prototype.playerJoined = function(from){
 	for(var i = 0; i < this.players.length; i++){
 		if(this.players[i] === null) continue;
@@ -361,6 +368,23 @@ Match.prototype.open = function(){
 	this.closed = false;
 	this.onOpen();
 };
+/**
+ * Set a lock for a specified key 
+ * @param {string} key 
+ */
+Match.prototype.acquireLock = function (key) {
+	if (this.locks[key]) {
+		return false;
+	}
+	this.locks[key] = true;
+	setTimeout(() => {
+		this.locks[key] = false;
+	}, 10000);
+	return true;
+};
+Match.prototype.releaseLock = function (key) {
+	delete this.locks[key];
+}
 
 function MatchMaster(gameName){
 	this._onChanged = function(){};
@@ -714,6 +738,27 @@ function gameConnectionHandler(socket, matchMaster){
 			matchMaster.addPlayerToMatch(player, data.matchNum);
 		});
 	});
+	socket.on('acquireLock', function(data) {
+		// data = {key: string}
+		socket.get('currentMatchNumber', function(err, num){
+			var match = matchMaster.getMatch(num);
+			if (match) {
+				var result = match.acquireLock(data.key)
+				socket.emit('acquireLock.' + data.key, result)
+				match.emitToAll('updatedLocks', match.locks)
+			}
+		});
+	})
+	socket.on('releaseLock', function(data) {
+		// data = {key: string}
+		socket.get('currentMatchNumber', function(err, num){
+			var match = matchMaster.getMatch(num);
+			if (match) {
+				var result = match.releaseLock(data.key)
+				match.emitToAll('updatedLocks', match.locks)
+			}
+		});
+	})
 }
 
 (function(){
