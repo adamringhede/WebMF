@@ -14,7 +14,7 @@
     "mongodb": "2.*",
     "mongoskin": "2.*",
     "node-gyp": "~1.0.1",
-    "socket.io": "1.4",
+    "socket.io": "2.4",
     "yargs": "^16.2.0"
   }
 }
