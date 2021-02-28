@@ -18,6 +18,7 @@ var socketio = require('socket.io'),
 	db = mongo.db('localhost:27017/WebMF', {safe:true}),
 	BSON = mongo.BSONPure;
 const yargs = require('yargs');
+const uuid = require("uuid");
 	
 // Used to creat IDs for mongoDB
 function objectId(theidID){
@@ -68,9 +69,11 @@ Player.prototype.info = function(){
 		name:this.name
 	};
 };
+
+
 /* specs = {max:int, min:int}
  */
-function Match(specs, id){
+function Match(specs, id = uuid.v4()){
 	this.players = [];
 	this.type = specs ? ( specs.type || "" ) : "";
 	this.host = null;
@@ -705,7 +708,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 			if (match) {
 				match.changeState(data.path, data.obj);
 				if (hooks.onStateUpdate) {
-					hooks.onStateUpdate(match.state)
+					hooks.onStateUpdate(match.id, match.state)
 				} else {
 					console.warn("Hooks function missing: onStateUpdate(state)")
 				}
@@ -805,7 +808,7 @@ function loadHooks(path) {
 		.argv;
 
 	const hooks = loadHooks(argv.hooks != null ? argv.hooks : './hooks-default')
-	const games = argv.games ?? ['main']
+	const games = argv.games ? argv.games.split(',') : ['main']
 	/*
 	io.of('/administration').on('connection', function(socket){
 		
