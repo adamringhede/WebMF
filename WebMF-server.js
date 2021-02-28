@@ -84,6 +84,7 @@ function Match(specs, id){
 	this.startedAt = new Date().getTime();
 	this.timeElapsed = 0; // A clock that should be used by all clients to not rely on wall time. 
 	this.locks = {};
+	this.queues = {};
 	this._onChange = function(){};
 	this.playerLeft = function(){};
 	this.onOpen = function(){};
@@ -336,6 +337,13 @@ Match.prototype.emitToAll = function(key, data) {
 		if(this.players[i] == null) continue;
 		this.players[i].socket.emit(key, data);
 	}
+}
+Match.prototype.pushToQueue = function(queueName, entry) {
+	if (!this.queues[queueName]) this.queues[queueName] = [];
+	this.queues[queueName].push(entry)
+	// This might create a lot of messages. However, hopefully, this will still provide some synchronization.
+	// A character may perform 1 action per second on average so in a 3v3 we will have 6 messages per second on average. Possibly up to 18 per second
+	this.emitToAll('queueUpdate.' + queueName, entry)
 }
 Match.prototype.playerJoined = function(from){
 	for(var i = 0; i < this.players.length; i++){
@@ -756,6 +764,15 @@ function gameConnectionHandler(socket, matchMaster){
 			if (match) {
 				var result = match.releaseLock(data.key)
 				match.emitToAll('updatedLocks', match.locks)
+			}
+		});
+	})
+	socket.on('putToQueue', function(data) {
+		// data: { queue: string, entry: any }
+		socket.get('currentMatchNumber', function(err, num){
+			var match = matchMaster.getMatch(num);
+			if (match) {
+				match.pushToQueue(data.queue, data.entry)
 			}
 		});
 	})
