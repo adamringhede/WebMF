@@ -132,29 +132,13 @@ function Match(specs, id = uuid.v4()){
  */
 Match.prototype.changeState = function(path, obj){
 	var pathSteps =  path.split('/');
-	var stateObjectReference = this.state;
-	for(var i = 0; i < pathSteps.length; i++){
-		if(stateObjectReference[pathSteps[i]] === null || stateObjectReference[pathSteps[i]] === undefined){
-			stateObjectReference[pathSteps[i]] = {};
-		}
-		if(pathSteps[i] !== null){
-            if(i === 0){
-				if(pathSteps.length === 1){
-					stateObjectReference[pathSteps[i]] = obj;
-				} else {
-					stateObjectReference = this.state[pathSteps[i]];
-				}
-            } else {
-				if(i === pathSteps.length-1){
-					stateObjectReference[pathSteps[i]] = obj;
-					break;
-				} else {
-                	stateObjectReference = stateObjectReference[pathSteps[i]];
-				}
-            }
-
-		}
-	}
+	const end = pathSteps.slice(0,-1).reduce((state, step) => {
+        if (!state[step]) {
+            state[step] = {};
+        }
+        return state[step];
+    }, this.state)
+    end[pathSteps[pathSteps.length-1]] = obj;
 	this.onStateChange(path, obj);
 };
 Match.prototype.onStateChange = function(path, obj){
