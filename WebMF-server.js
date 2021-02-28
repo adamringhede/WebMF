@@ -17,6 +17,7 @@ var socketio = require('socket.io'),
 	io = socketio.listen(8083,  {'transports': ['websocket', 'polling']}),
 	db = mongo.db('localhost:27017/WebMF', {safe:true}),
 	BSON = mongo.BSONPure;
+const yargs = require('yargs');
 	
 // Used to creat IDs for mongoDB
 function objectId(theidID){
@@ -582,7 +583,7 @@ MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	
 };
 
-function gameConnectionHandler(socket, matchMaster){
+function gameConnectionHandler(socket, matchMaster, hooks){
 	polyfillSocket(socket)
 
 	socket.on('set nickname', function (playerName) {
@@ -703,6 +704,12 @@ function gameConnectionHandler(socket, matchMaster){
 			var match = matchMaster.getMatch(num);
 			if (match) {
 				match.changeState(data.path, data.obj);
+				if (hooks.onStateUpdate) {
+					hooks.onStateUpdate(match.state)
+				} else {
+					console.warn("Hooks function missing: onStateUpdate(state)")
+				}
+				
 			}
 		});
 	});
@@ -778,10 +785,24 @@ function gameConnectionHandler(socket, matchMaster){
 	})
 }
 
+function loadHooks(path) {
+	console.log("Using hooks from module at: " + path)
+	return require(path);
+}
+
 (function(){
 	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));
 		running = {},
 		adminSockets = [];
+	const argv = yargs
+		.option('hooks', {
+			description: 'A js file to handle events',
+			type: 'string',
+		})
+		.help().alias('help', 'h')
+		.argv;
+
+	const hooks = loadHooks(argv.hooks != null ? argv.hooks : './hooks-default')
 	/*
 	io.of('/administration').on('connection', function(socket){
 		
@@ -814,7 +835,6 @@ function gameConnectionHandler(socket, matchMaster){
 		broadcastAdmins('gotServerStates', running);
 	}
 	setInterval(pushServerStates, 7000);*/
-//	setTimeout(function(){
 	// Start games in config file
 	for(var i = 0; i < games.length; i++){
 		if(!games[i].shouldRun){
@@ -847,7 +867,7 @@ function gameConnectionHandler(socket, matchMaster){
 				pushServerStates()
 			});*/
 			io.of('/'+games[i].name).on('connection', function(socket){
-				gameConnectionHandler(socket, matchMaster);
+				gameConnectionHandler(socket, matchMaster, hooks);
 			});
 			return {
 				game: games[i].name,
@@ -857,5 +877,4 @@ function gameConnectionHandler(socket, matchMaster){
 			};
 		})();	
 	}
-//	}, 2000);
 })();
