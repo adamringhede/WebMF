@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "A javascript framework using web sockets and simplifying the development of multiplayer games using web technologies.",
   "main": "WebMF-server.js",
+  "bin": {
+    "webmf-server": "./bin/server.js"
+  },
   "scripts": {
     "test": "echo \"no test specified\" && exit 1"
   },
