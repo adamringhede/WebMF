@@ -608,6 +608,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 	});
 	socket.on('disconnect', function(){
 		socket.get('player', function(err, player){
+			if (!player || !palery.socket) return;
 			console.log("player diconnected with id " + socket.id)
 			var match;
 			var players;
@@ -708,7 +709,11 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 			if (match) {
 				match.changeState(data.path, data.obj);
 				if (hooks.onStateUpdate) {
-					hooks.onStateUpdate(match.id, match.state)
+					try {
+						hooks.onStateUpdate(match.id, match.state)
+					} catch (e) {
+						console.error("Hooks error: " + e.message);
+					}
 				} else {
 					console.warn("Hooks function missing: onStateUpdate(state)")
 				}
