@@ -11,7 +11,7 @@
   "dependencies": {
     "bson": "~0.2.*",
     "lodash": "2.*",
-    "mongodb": "2.*",
+    "mongodb": "3.*",
     "mongoskin": "2.*",
     "node-gyp": "~1.0.1",
     "socket.io": "1.4",
