@@ -791,18 +791,21 @@ function loadHooks(path) {
 }
 
 (function(){
-	var games = JSON.parse(fs.readFileSync('configs', 'utf8'));
-		running = {},
-		adminSockets = [];
+	const running = {};
 	const argv = yargs
 		.option('hooks', {
 			description: 'A js file to handle events',
+			type: 'string',
+		})
+		.option('games', {
+			description: 'A list of games to use',
 			type: 'string',
 		})
 		.help().alias('help', 'h')
 		.argv;
 
 	const hooks = loadHooks(argv.hooks != null ? argv.hooks : './hooks-default')
+	const games = argv.games ?? ['main']
 	/*
 	io.of('/administration').on('connection', function(socket){
 		
@@ -837,14 +840,8 @@ function loadHooks(path) {
 	setInterval(pushServerStates, 7000);*/
 	// Start games in config file
 	for(var i = 0; i < games.length; i++){
-		if(!games[i].shouldRun){
-			running[games[i].name] = {
-				game: games[i].name,
-				running: false
-			};
-		}
 		running[i] = (function(){
-			console.log("Started: "+games[i].name);
+			console.log("Started: "+games[i]);
 			/*
 			broadcastAdmins('startedGameConnector', {
 				name: games[i].name,
@@ -852,7 +849,7 @@ function loadHooks(path) {
 				max: games.length
 			});
 			*/
-			var matchMaster = new MatchMaster(games[i].name);
+			var matchMaster = new MatchMaster(games[i]);
 			setInterval(() => {
 				matchMaster.putPlayersInMatches();
 			}, 5000);
@@ -866,11 +863,11 @@ function loadHooks(path) {
 			//	broadcastAdmins('playerQueueChanged', {game:gameName, playerQueue:queue});
 				pushServerStates()
 			});*/
-			io.of('/'+games[i].name).on('connection', function(socket){
+			io.of('/'+games[i]).on('connection', function(socket){
 				gameConnectionHandler(socket, matchMaster, hooks);
 			});
 			return {
-				game: games[i].name,
+				game: games[i],
 				matches: matchMaster.matches,
 				playerQueue: matchMaster.playerQueue,
 				running: true
