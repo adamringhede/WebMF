@@ -592,7 +592,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 	});
 	socket.on('disconnect', function(){
 		socket.get('player', function(err, player){
-			if (!player || !palery.socket) return;
+			if (!player || !player.socket) return;
 			console.log("player diconnected with id " + socket.id)
 			var match;
 			var players;
