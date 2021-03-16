@@ -743,7 +743,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 	socket.on('joinMatch', function(data){
 		socket.get('player', function(err, player){
 			if (!matchMaster.getMatch(data.matchNum)) {
-				const match = new Match({}, data.matchNum);
+				const match = new Match(null, data.matchNum);
 				match.closed = true;
 				matchMaster.matches.push(match)
 			}
