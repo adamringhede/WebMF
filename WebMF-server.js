@@ -523,7 +523,7 @@ MatchMaster.prototype.addPlayerToQueue = function(player){
 MatchMaster.prototype.addPlayerToMatch = function(player, matchNum){
 	var match;
 	function addToMatch(match, matchNum, player){
-		if(match && match.players.length < match.maxSize && match.closed === false) {
+		if(match && match.players.length < match.maxSize) {
 			match.addPlayer(player); 
 			var players = [];
 			for(var i = 0; i < match.players.length; i++) {
