@@ -187,7 +187,9 @@ Match.prototype.getState = function(path){
  * player instance of MPPlayer
  */
 Match.prototype.addPlayer = function(player){
-	this.players.push(player);
+	if (this.players.some(p => p.id == player.id)) {
+		this.players.push(player);
+	}
 	this.change();
 	player.inmatch = true;
 	if(this.players.length === 1){
@@ -669,6 +671,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 	socket.on('leaveMatch', function(id){
 		socket.get('currentMatchNumber', function(err, num){
 			var match = matchMaster.getMatch(num);
+			if (!match) return;
 			socket.get('player', function(err,player){
 				for(var i = 0; i < match.players.length; i++){
 					if(match.players[i].socket.id !== socket.id){
