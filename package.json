@@ -12,7 +12,7 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "bson": "~0.2.*",
+    "bson": "~1.1.*",
     "lodash": "2.*",
     "mongodb": "2.*",
     "mongoskin": "2.*",
