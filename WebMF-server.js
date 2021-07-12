@@ -187,6 +187,7 @@ Match.prototype.getState = function(path){
  * player instance of MPPlayer
  */
 Match.prototype.addPlayer = function(player){
+	if (player == null) throw new Error("Can not add null as player");
 	const alreadyAdded = this.players.some(p => p.id == player.id)
 	if (alreadyAdded) {
 		return
@@ -626,7 +627,8 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 				if(players.length === 0) {
 					// Remove match
 					console.log("Removing match with number " + num)
-					matchMaster.removeMatch(num);
+					// This can cause issues if players are needing to reconnect.
+					//matchMaster.removeMatch(num);
 				}
 			});
 			
@@ -663,6 +665,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 		socket.on(type, function(data){
 			socket.get('currentMatchNumber', function(err, num){
 				var match = matchMaster.getMatch(num);
+				if (match == null) return;
 				for(var i = 0; i < match.players.length; i++){
 					if(match.players[i].socket.id !== socket.id){
 						match.players[i].socket.emit(type, data);
