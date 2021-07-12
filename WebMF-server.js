@@ -191,6 +191,7 @@ Match.prototype.addPlayer = function(player){
 	if (alreadyAdded) {
 		return
 	}
+	this.players.push(player)
 	this.change();
 	player.inmatch = true;
 	if(this.players.length === 1){
