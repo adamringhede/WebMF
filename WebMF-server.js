@@ -606,6 +606,7 @@ function gameConnectionHandler(socket, matchMaster, hooks){
 			socket.get('currentMatchNumber', function(err, num){
 				if(num === -1) return;
 				match = matchMaster.getMatch(num);
+				if (match == null) return;
 				players = match.players;
 				match.removePlayer(player.socket.id);
 				// Broadcast disconnection message
