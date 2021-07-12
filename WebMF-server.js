@@ -187,8 +187,9 @@ Match.prototype.getState = function(path){
  * player instance of MPPlayer
  */
 Match.prototype.addPlayer = function(player){
-	if (this.players.some(p => p.id == player.id)) {
-		this.players.push(player);
+	const alreadyAdded = this.players.some(p => p.id == player.id)
+	if (alreadyAdded) {
+		return
 	}
 	this.change();
 	player.inmatch = true;
