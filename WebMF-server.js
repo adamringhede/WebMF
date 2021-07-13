@@ -188,7 +188,7 @@ Match.prototype.getState = function(path){
  */
 Match.prototype.addPlayer = function(player){
 	if (player == null) throw new Error("Can not add null as player");
-	const alreadyAdded = this.players.some(p => p.id == player.id)
+	const alreadyAdded = this.players.some(p => p.id == player.id && p.socket.id == player.socket.id)
 	if (alreadyAdded) {
 		return
 	}
